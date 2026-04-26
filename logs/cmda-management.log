@@ -283,3 +283,144 @@ io.jsonwebtoken.ExpiredJwtException: JWT expired at 2024-11-16T10:13:02Z. Curren
 2026-04-26T01:47:01.198+02:00  INFO 38280 --- [cmda-system-management] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-04-26T01:47:01.289+02:00  INFO 38280 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2026-04-26T01:47:01.400+02:00  INFO 38280 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-26T02:54:25.815+02:00  INFO 38084 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Starting CmdaSystemManagementApplication using Java 17.0.7 with PID 38084 (C:\cmdaDev\cmda-system-management\target\classes started by oulay in C:\cmdaDev\cmda-system-management)
+2026-04-26T02:54:25.819+02:00 DEBUG 38084 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Running with Spring Boot v3.3.3, Spring v6.1.12
+2026-04-26T02:54:25.820+02:00  INFO 38084 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-04-26T02:54:27.005+02:00  INFO 38084 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-26T02:54:27.122+02:00  INFO 38084 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 105 ms. Found 5 JPA repository interfaces.
+2026-04-26T02:54:27.964+02:00  INFO 38084 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-26T02:54:27.987+02:00  INFO 38084 --- [cmda-system-management] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-26T02:54:27.987+02:00  INFO 38084 --- [cmda-system-management] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.28]
+2026-04-26T02:54:28.092+02:00  INFO 38084 --- [cmda-system-management] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-26T02:54:28.093+02:00  INFO 38084 --- [cmda-system-management] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2198 ms
+2026-04-26T02:54:28.195+02:00 DEBUG 38084 --- [cmda-system-management] [main] o.c.m.filters.JwtAuthenticationFilter    : Filter 'jwtAuthenticationFilter' configured for use
+2026-04-26T02:54:28.348+02:00  INFO 38084 --- [cmda-system-management] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-26T02:54:28.457+02:00  INFO 38084 --- [cmda-system-management] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-04-26T02:54:28.520+02:00  INFO 38084 --- [cmda-system-management] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-26T02:54:28.942+02:00  INFO 38084 --- [cmda-system-management] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-26T02:54:28.993+02:00  INFO 38084 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-26T02:54:29.537+02:00  INFO 38084 --- [cmda-system-management] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e96cb04
+2026-04-26T02:54:29.540+02:00  INFO 38084 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-26T02:54:29.628+02:00  WARN 38084 --- [cmda-system-management] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-26T02:54:30.839+02:00  INFO 38084 --- [cmda-system-management] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-26T02:54:30.965+02:00  INFO 38084 --- [cmda-system-management] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26T02:54:31.026+02:00  INFO 38084 --- [cmda-system-management] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-04-26T02:54:31.027+02:00  WARN 38084 --- [cmda-system-management] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-04-26T02:54:31.497+02:00  WARN 38084 --- [cmda-system-management] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-26T02:54:32.154+02:00  INFO 38084 --- [cmda-system-management] [main] o.c.management.configs.SecurityConfig    : Configuration de securite JWT appliquee.
+2026-04-26T02:54:32.563+02:00  INFO 38084 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-04-26T02:54:32.570+02:00  INFO 38084 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Started CmdaSystemManagementApplication in 7.415 seconds (process running for 8.0)
+2026-04-26T02:55:22.024+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.apache.coyote.http11.Http11Processor   : Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x070x120x010x000x070x0e0x030x030xa00xf10xcde0xc0wL0xa70x0f"50x910x96:G0xce0x160xb90xae0x1e0x8a0x1b0x170xa20x840x100xc14^0xe20xfc0x13 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:257) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-04-26T02:55:22.024+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.apache.coyote.http11.Http11Processor   : Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x070x120x010x000x070x0e0x030x030xa3=0xf2q0xd60xa30xbe>Oz0x875O0x92H,S0x960x880x11H0x80$0x840x9aQ ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:257) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-04-26T02:55:22.172+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.apache.coyote.http11.Http11Processor   : Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+
+java.lang.IllegalArgumentException: Invalid character found in method name [0x160x030x010x070x120x010x000x070x0e0x030x03wV0xe9sA0x86X0x1d0xcbtx0x910xb1D+0xa4GvL^0xd20x900x8f0xb1.0xd60x1c0x9b!0x89K0x00 ]. HTTP method names must be tokens
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:407) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:257) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.28.jar:10.1.28]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2026-04-26T02:55:47.543+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-6] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-26T02:55:47.544+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-26T02:55:47.556+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-6] o.s.web.servlet.DispatcherServlet        : Completed initialization in 9 ms
+2026-04-26T02:55:47.797+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T02:55:51.160+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T02:56:37.813+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-10] o.c.m.controllers.AuthController         : Authenticating user: adminUser20241108
+2026-04-26T02:56:37.995+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-10] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T02:56:38.497+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-10] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:05:00.707+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:05:00.766+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:05:00.767+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T03:05:00.818+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:05:00.819+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-04-26T03:05:00.819+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:05:00.821+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:05:00.822+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-04-26T03:05:00.825+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-04-26T03:05:00.825+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-04-26T03:05:32.080+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:05:32.085+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:05:32.086+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T03:05:32.093+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:05:32.093+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-04-26T03:05:32.094+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:05:32.098+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:05:32.098+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-04-26T03:05:32.102+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-04-26T03:05:32.103+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-04-26T03:08:34.995+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:12:09.050+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:12:09.054+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:12:09.055+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T03:12:09.063+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:12:09.064+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-04-26T03:12:09.064+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:12:09.071+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:12:09.071+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-04-26T03:12:09.077+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-04-26T03:12:09.078+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-04-26T03:15:01.543+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:15:04.118+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:15:07.267+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:15:08.266+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:16:11.371+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:16:11.375+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:16:11.376+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T03:16:11.387+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:16:11.388+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-04-26T03:16:11.388+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:16:11.391+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:16:11.392+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-04-26T03:16:11.395+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-04-26T03:16:11.396+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-04-26T03:16:11.447+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:16:19.738+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:16:19.740+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:16:19.741+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-04-26T03:16:19.746+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-04-26T03:16:19.747+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-04-26T03:16:19.747+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-04-26T03:16:19.749+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-04-26T03:16:19.750+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-04-26T03:16:19.753+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-04-26T03:16:19.753+02:00  INFO 38084 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-04-26T03:23:58.726+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:24:00.093+02:00 ERROR 38084 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-04-26T03:38:59.689+02:00  INFO 38084 --- [cmda-system-management] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-26T03:38:59.728+02:00  INFO 38084 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-26T03:38:59.748+02:00  INFO 38084 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
