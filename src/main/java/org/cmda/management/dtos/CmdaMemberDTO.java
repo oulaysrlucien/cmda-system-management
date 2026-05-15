@@ -24,6 +24,16 @@ public class CmdaMemberDTO {
     private String fraternityName;  // Ajout du nom de la fraternité
 
 
+    // MISE A JOUR : informations de region pour valider le filtrage metier
+    private Long regionId;
+    private String regionName;
+
+    // MISE A JOUR : informations de province pour valider le filtrage metier
+    private Long provinceId;
+    private String provinceName;
+
+
+
 
 
 
@@ -116,6 +126,43 @@ public class CmdaMemberDTO {
     public void setFraternityName(String fraternityName){
         this.fraternityName = fraternityName;
     }
+
+
+
+    // MISE A JOUR : getters et setters pour la region
+    public Long getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(Long regionId) {
+        this.regionId = regionId;
+    }
+
+    public String getRegionName() {
+        return regionName;
+    }
+
+    public void setRegionName(String regionName) {
+        this.regionName = regionName;
+    }
+
+    // MISE A JOUR : getters et setters pour la province
+    public Long getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Long provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
 
 
 }

@@ -51,3 +51,100 @@
 2026-05-15T17:05:04.638+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-05-15T17:05:04.640+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2026-05-15T17:05:04.647+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-05-15T18:15:49.443+02:00  INFO 22424 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Starting CmdaSystemManagementApplication using Java 17.0.7 with PID 22424 (C:\cmdaDev\cmda-system-management\target\classes started by oulay in C:\cmdaDev\cmda-system-management)
+2026-05-15T18:15:49.446+02:00 DEBUG 22424 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Running with Spring Boot v3.3.3, Spring v6.1.12
+2026-05-15T18:15:49.447+02:00  INFO 22424 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T18:15:50.152+02:00  INFO 22424 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T18:15:50.218+02:00  INFO 22424 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57 ms. Found 5 JPA repository interfaces.
+2026-05-15T18:15:50.762+02:00  INFO 22424 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-15T18:15:50.776+02:00  INFO 22424 --- [cmda-system-management] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T18:15:50.778+02:00  INFO 22424 --- [cmda-system-management] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.28]
+2026-05-15T18:15:50.855+02:00  INFO 22424 --- [cmda-system-management] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T18:15:50.855+02:00  INFO 22424 --- [cmda-system-management] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1370 ms
+2026-05-15T18:15:50.921+02:00 DEBUG 22424 --- [cmda-system-management] [main] o.c.m.filters.JwtAuthenticationFilter    : Filter 'jwtAuthenticationFilter' configured for use
+2026-05-15T18:15:51.021+02:00  INFO 22424 --- [cmda-system-management] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T18:15:51.086+02:00  INFO 22424 --- [cmda-system-management] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-05-15T18:15:51.121+02:00  INFO 22424 --- [cmda-system-management] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T18:15:51.400+02:00  INFO 22424 --- [cmda-system-management] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T18:15:51.435+02:00  INFO 22424 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T18:15:51.801+02:00  INFO 22424 --- [cmda-system-management] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@69bc4024
+2026-05-15T18:15:51.804+02:00  INFO 22424 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T18:15:51.868+02:00  WARN 22424 --- [cmda-system-management] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T18:15:52.669+02:00  INFO 22424 --- [cmda-system-management] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T18:15:52.796+02:00  INFO 22424 --- [cmda-system-management] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T18:15:52.861+02:00  INFO 22424 --- [cmda-system-management] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-05-15T18:15:52.862+02:00  WARN 22424 --- [cmda-system-management] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-05-15T18:15:53.297+02:00  WARN 22424 --- [cmda-system-management] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T18:15:53.863+02:00  INFO 22424 --- [cmda-system-management] [main] o.c.management.configs.SecurityConfig    : Configuration de securite JWT appliquee.
+2026-05-15T18:15:54.181+02:00  INFO 22424 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-15T18:15:54.188+02:00  INFO 22424 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Started CmdaSystemManagementApplication in 5.157 seconds (process running for 5.516)
+2026-05-15T18:16:02.423+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T18:16:02.424+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T18:16:02.425+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-05-15T18:16:02.467+02:00 ERROR 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T18:16:04.666+02:00 ERROR 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T18:16:11.854+02:00 ERROR 22424 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T18:16:12.710+02:00 ERROR 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T18:19:20.346+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:19:20.497+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T18:19:20.498+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-05-15T18:19:21.022+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-05-15T18:19:21.026+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-05-15T18:19:21.027+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:19:21.030+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T18:19:21.031+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T18:19:21.033+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T18:19:21.035+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-05-15T18:20:34.876+02:00 ERROR 22424 --- [cmda-system-management] [http-nio-8080-exec-10] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T18:36:31.543+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.m.controllers.AuthController         : Authenticating user: provincialUser@exampleTEST.com
+2026-05-15T18:36:31.702+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : provincialUser@exampleTEST.com
+2026-05-15T18:36:31.778+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : provincialUser@exampleTEST.com avec le rôle : PROVINCIAL
+2026-05-15T18:37:26.889+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:37:26.894+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : provincialUser@exampleTEST.com
+2026-05-15T18:37:26.895+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : provincialUser@exampleTEST.com
+2026-05-15T18:37:26.907+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : provincialUser@exampleTEST.com avec le rôle : PROVINCIAL
+2026-05-15T18:37:26.908+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : provincialUser@exampleTEST.com
+2026-05-15T18:37:26.908+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:37:26.910+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : provincialUser@exampleTEST.com
+2026-05-15T18:37:26.910+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T18:37:26.915+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T18:37:26.916+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : provincialUser@exampleTEST.com
+2026-05-15T18:41:25.834+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-5] o.c.m.controllers.AuthController         : Authenticating user: regionalUser@exampleTEST.com
+2026-05-15T18:41:25.835+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-5] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : regionalUser@exampleTEST.com
+2026-05-15T18:41:25.853+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-5] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : regionalUser@exampleTEST.com avec le rôle : REGIONAL
+2026-05-15T18:42:13.883+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:42:13.888+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : regionalUser@exampleTEST.com
+2026-05-15T18:42:13.889+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : regionalUser@exampleTEST.com
+2026-05-15T18:42:13.905+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : regionalUser@exampleTEST.com avec le rôle : REGIONAL
+2026-05-15T18:42:13.906+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : regionalUser@exampleTEST.com
+2026-05-15T18:42:13.907+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:42:13.916+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : regionalUser@exampleTEST.com
+2026-05-15T18:42:13.917+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T18:42:13.920+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T18:42:13.921+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-8] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : regionalUser@exampleTEST.com
+2026-05-15T18:47:06.466+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.controllers.AuthController         : Authenticating user: bergerUser@exampleTEST.com
+2026-05-15T18:47:06.467+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : bergerUser@exampleTEST.com
+2026-05-15T18:47:06.485+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : bergerUser@exampleTEST.com avec le rôle : BERGER
+2026-05-15T18:47:44.662+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:47:44.665+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : bergerUser@exampleTEST.com
+2026-05-15T18:47:44.665+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : bergerUser@exampleTEST.com
+2026-05-15T18:47:44.687+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : bergerUser@exampleTEST.com avec le rôle : BERGER
+2026-05-15T18:47:44.689+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : bergerUser@exampleTEST.com
+2026-05-15T18:47:44.691+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:47:44.698+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : bergerUser@exampleTEST.com
+2026-05-15T18:47:44.699+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T18:47:44.701+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T18:47:44.701+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-2] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : bergerUser@exampleTEST.com
+2026-05-15T18:53:44.499+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:53:44.506+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T18:53:44.506+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-05-15T18:53:44.520+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-05-15T18:53:44.521+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-05-15T18:53:44.522+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T18:53:44.526+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T18:53:44.527+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T18:53:44.530+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T18:53:44.531+02:00  INFO 22424 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-05-15T19:07:50.323+02:00  INFO 22424 --- [cmda-system-management] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T19:07:50.323+02:00  INFO 22424 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-05-15T19:07:50.335+02:00  INFO 22424 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

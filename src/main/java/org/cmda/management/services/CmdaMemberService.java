@@ -172,18 +172,39 @@ public class CmdaMemberService {
         dto.setStatus(cmdaMember.getStatus().toString());
 
 
-        //dto.setFraternityId(cmdaMember.getFraternity().getId());
-        //dto.setFraternityName(cmdaMember.getFraternity().getName());  // Assigner le nom de la fraternité
-
-        // Assurer que vous ne renvoyez pas la relation complète `fraternity`
-        // mais seulement son `Id` et `Name`
+        // MISE A JOUR : ajout des informations hierarchiques Fraternity -> Region -> Province
         if (cmdaMember.getFraternity() != null) {
-            dto.setFraternityId(cmdaMember.getFraternity().getId());
-            dto.setFraternityName(cmdaMember.getFraternity().getName());
+            Fraternity fraternity = cmdaMember.getFraternity();
+
+            dto.setFraternityId(fraternity.getId());
+            dto.setFraternityName(fraternity.getName());
+
+            if (fraternity.getRegion() != null) {
+                dto.setRegionId(fraternity.getRegion().getId());
+                dto.setRegionName(fraternity.getRegion().getName());
+
+                if (fraternity.getRegion().getProvince() != null) {
+                    dto.setProvinceId(fraternity.getRegion().getProvince().getId());
+                    dto.setProvinceName(fraternity.getRegion().getProvince().getName());
+                } else {
+                    dto.setProvinceId(null);
+                    dto.setProvinceName(null);
+                }
+            } else {
+                dto.setRegionId(null);
+                dto.setRegionName(null);
+                dto.setProvinceId(null);
+                dto.setProvinceName(null);
+            }
         } else {
             dto.setFraternityId(null);
             dto.setFraternityName(null);
+            dto.setRegionId(null);
+            dto.setRegionName(null);
+            dto.setProvinceId(null);
+            dto.setProvinceName(null);
         }
+
 
 
 
