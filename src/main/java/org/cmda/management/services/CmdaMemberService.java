@@ -333,5 +333,57 @@ public class CmdaMemberService {
 
 
 
+    /*
+     * MISE A JOUR
+     * Recupere un membre par ID uniquement s'il appartient
+     * au perimetre de l'utilisateur connecte.
+     *
+     * ADMIN : acces global
+     * PROVINCIAL : membre dans sa province
+     * REGIONAL : membre dans sa region
+     * BERGER : membre dans sa fraternite
+     */
+    public Optional<CmdaMemberDTO> getMemberByIdForCurrentUser(Long id) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        switch (currentUser.getRole()) {
+            case ADMIN:
+                return cmdaMemberRepository.findById(id)
+                        .map(this::convertToDTO);
+
+            case PROVINCIAL:
+                if (currentUser.getProvince() == null) {
+                    throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityRegionProvinceId(id, currentUser.getProvince().getId())
+                        .map(this::convertToDTO);
+
+            case REGIONAL:
+                if (currentUser.getRegion() == null) {
+                    throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityRegionId(id, currentUser.getRegion().getId())
+                        .map(this::convertToDTO);
+
+            case BERGER:
+                if (currentUser.getFraternity() == null) {
+                    throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityId(id, currentUser.getFraternity().getId())
+                        .map(this::convertToDTO);
+
+            default:
+                throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+        }
+    }
+
+
+
 
 }

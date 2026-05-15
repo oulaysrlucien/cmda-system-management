@@ -101,10 +101,11 @@ public class CmdaMemberController {
     // Endpoint pour récupérer un membre par son ID
     @GetMapping("/{id}")
     public ResponseEntity<CmdaMemberDTO> getMemberById(@PathVariable Long id) {
-        Optional<CmdaMemberDTO> member = cmdaMemberService.getMemberById(id);
+        Optional<CmdaMemberDTO> member = cmdaMemberService.getMemberByIdForCurrentUser(id);
         return member.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 
     // Endpoint pour mettre à jour un membre
     @PutMapping("/update/{id}")
