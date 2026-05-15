@@ -1,129 +1,5 @@
 package org.cmda.management.services;
 
-
-/*
-import org.cmda.management.entities.CmdaMember;
-import org.cmda.management.dtos.CmdaMemberDTO;
-import org.cmda.management.repositories.CmdaMemberRepository;
-import org.cmda.management.enums.MemberStatus;
-import org.cmda.management.entities.Fraternity;
-import org.cmda.management.repositories.FraternityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.cmda.management.dtos.CmdaMemberWithFraternityDTO;
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Optional;
-
-@Service
-public class CmdaMemberService {
-
-    @Autowired
-    private CmdaMemberRepository cmdaMemberRepository;
-
-    @Autowired
-    private FraternityRepository fraternityRepository;
-
-    // Créer un membre
-    public CmdaMember saveCmdaMember(CmdaMemberDTO cmdaMemberDTO) {
-        CmdaMember cmdaMember = new CmdaMember();
-        cmdaMember.setFirstName(cmdaMemberDTO.getFirstName());
-        cmdaMember.setLastName(cmdaMemberDTO.getLastName());
-        cmdaMember.setEmail(cmdaMemberDTO.getEmail());
-        cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
-        cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
-        cmdaMember.setProfession(cmdaMemberDTO.getProfession());
-
-        // Conversion du statut de String à Enum
-        cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
-
-        // Récupérer la Fraternity à partir de l'ID fourni
-        Fraternity fraternity = fraternityRepository.findById(cmdaMemberDTO.getFraternityId())
-                .orElseThrow(() -> new RuntimeException("Fraternity not found"));
-        cmdaMember.setFraternity(fraternity);
-
-        return cmdaMemberRepository.save(cmdaMember);
-    }
-
-    // Lire les membres
-    public List<CmdaMember> getAllMembers() {
-        return cmdaMemberRepository.findAll();
-    }
-
-    // Lire les membres avec leur fraternité
-    public List<CmdaMemberWithFraternityDTO> getAllMembersWithFraternity() {
-        List<CmdaMember> members = cmdaMemberRepository.findAll();
-        List<CmdaMemberWithFraternityDTO> memberDTOs = new ArrayList<>();
-
-        for (CmdaMember member : members) {
-            CmdaMemberWithFraternityDTO dto = new CmdaMemberWithFraternityDTO();
-            dto.setId(member.getId());
-            dto.setFirstName(member.getFirstName());
-            dto.setLastName(member.getLastName());
-            dto.setEmail(member.getEmail());
-            dto.setPhoneNumber(member.getPhoneNumber());
-            dto.setBirthday(member.getBirthday().toString());
-            dto.setProfession(member.getProfession());
-            dto.setStatus(member.getStatus().toString());
-
-            // Inclure uniquement le nom et l'ID de la fraternité
-            dto.setFraternityId(member.getFraternity().getId());
-            dto.setFraternityName(member.getFraternity().getName());
-
-            memberDTOs.add(dto);
-        }
-
-        return memberDTOs;
-    }
-
-
-    // Lire les premiers 10 membres
-    public List<CmdaMember> getFirst10Members() {
-        return cmdaMemberRepository.findTop10ByOrderByIdAsc();
-    }
-
-    // Lire un membre par son ID
-    public Optional<CmdaMember> getMemberById(Long id) {
-        return cmdaMemberRepository.findById(id);
-    }
-
-    // Mettre à jour un membre
-    public CmdaMember updateCmdaMember(Long id, CmdaMemberDTO cmdaMemberDTO) {
-        Optional<CmdaMember> existingMember = cmdaMemberRepository.findById(id);
-        if (existingMember.isPresent()) {
-            CmdaMember cmdaMember = existingMember.get();
-            cmdaMember.setFirstName(cmdaMemberDTO.getFirstName());
-            cmdaMember.setLastName(cmdaMemberDTO.getLastName());
-            cmdaMember.setEmail(cmdaMemberDTO.getEmail());
-            cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
-            cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
-            cmdaMember.setProfession(cmdaMemberDTO.getProfession());
-
-            // Conversion du statut de String à Enum
-            cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
-
-            Fraternity fraternity = fraternityRepository.findById(cmdaMemberDTO.getFraternityId())
-                    .orElseThrow(() -> new RuntimeException("Fraternity not found"));
-            cmdaMember.setFraternity(fraternity);
-
-            return cmdaMemberRepository.save(cmdaMember);
-        } else {
-            throw new RuntimeException("Member not found");
-        }
-    }
-
-    // Supprimer un membre
-    public void deleteCmdaMember(Long id) {
-        cmdaMemberRepository.deleteById(id);
-    }
-}
-*/
-
-
-
-
-
 import org.cmda.management.entities.CmdaMember;
 import org.cmda.management.dtos.CmdaMemberDTO;
 import org.cmda.management.repositories.CmdaMemberRepository;
@@ -140,8 +16,10 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.cmda.management.specifications.CmdaMemberSpecification;
-import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.jpa.domain.Specification;
+
+import org.cmda.management.entities.User; // MISE A JOUR : permet de manipuler l'utilisateur connecte
 
 
 
@@ -154,6 +32,13 @@ public class CmdaMemberService {
 
     @Autowired
     private FraternityRepository fraternityRepository;
+
+
+    // MISE A JOUR : service permettant de recuperer l'utilisateur actuellement connecte
+    @Autowired
+    private CurrentUserService currentUserService;
+
+
 
     // Créer un membre
     public CmdaMemberDTO saveCmdaMember(CmdaMemberDTO cmdaMemberDTO) {
@@ -367,6 +252,62 @@ public class CmdaMemberService {
         return memberDTOs;
     }
 
+
+
+
+    /*
+     * MISE A JOUR
+     * Retourne les membres autorises pour l'utilisateur connecte.
+     *
+     * Regles metier :
+     * - ADMIN : tous les membres
+     * - PROVINCIAL : membres de toutes les fraternites de sa province
+     * - REGIONAL : membres de toutes les fraternites de sa region
+     * - BERGER : membres de sa fraternite uniquement
+     *
+     * Important :
+     * Le frontend ne fournit pas le perimetre.
+     * Le perimetre est deduit cote backend depuis l'utilisateur connecte.
+     */
+    public Page<CmdaMemberDTO> getMembersForCurrentUser(Pageable pageable) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        switch (currentUser.getRole()) {
+            case ADMIN:
+                return cmdaMemberRepository.findAll(pageable)
+                        .map(this::convertToDTO);
+
+            case PROVINCIAL:
+                if (currentUser.getProvince() == null) {
+                    throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByFraternityRegionProvinceId(currentUser.getProvince().getId(), pageable)
+                        .map(this::convertToDTO);
+
+            case REGIONAL:
+                if (currentUser.getRegion() == null) {
+                    throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByFraternityRegionId(currentUser.getRegion().getId(), pageable)
+                        .map(this::convertToDTO);
+
+            case BERGER:
+                if (currentUser.getFraternity() == null) {
+                    throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByFraternityId(currentUser.getFraternity().getId(), pageable)
+                        .map(this::convertToDTO);
+
+            default:
+                throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+        }
+    }
 
 
 

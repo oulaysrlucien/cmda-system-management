@@ -1,0 +1,53 @@
+2026-05-15T16:57:52.615+02:00  INFO 19192 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Starting CmdaSystemManagementApplication using Java 17.0.7 with PID 19192 (C:\cmdaDev\cmda-system-management\target\classes started by oulay in C:\cmdaDev\cmda-system-management)
+2026-05-15T16:57:52.623+02:00 DEBUG 19192 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Running with Spring Boot v3.3.3, Spring v6.1.12
+2026-05-15T16:57:52.624+02:00  INFO 19192 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T16:57:53.210+02:00  INFO 19192 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T16:57:53.264+02:00  INFO 19192 --- [cmda-system-management] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 48 ms. Found 5 JPA repository interfaces.
+2026-05-15T16:57:53.746+02:00  INFO 19192 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-15T16:57:53.760+02:00  INFO 19192 --- [cmda-system-management] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T16:57:53.761+02:00  INFO 19192 --- [cmda-system-management] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.28]
+2026-05-15T16:57:53.827+02:00  INFO 19192 --- [cmda-system-management] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T16:57:53.828+02:00  INFO 19192 --- [cmda-system-management] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1162 ms
+2026-05-15T16:57:53.885+02:00 DEBUG 19192 --- [cmda-system-management] [main] o.c.m.filters.JwtAuthenticationFilter    : Filter 'jwtAuthenticationFilter' configured for use
+2026-05-15T16:57:53.977+02:00  INFO 19192 --- [cmda-system-management] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T16:57:54.036+02:00  INFO 19192 --- [cmda-system-management] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-05-15T16:57:54.074+02:00  INFO 19192 --- [cmda-system-management] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T16:57:54.339+02:00  INFO 19192 --- [cmda-system-management] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T16:57:54.371+02:00  INFO 19192 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T16:57:54.651+02:00  INFO 19192 --- [cmda-system-management] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62054faf
+2026-05-15T16:57:54.653+02:00  INFO 19192 --- [cmda-system-management] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T16:57:54.697+02:00  WARN 19192 --- [cmda-system-management] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T16:57:55.443+02:00  INFO 19192 --- [cmda-system-management] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T16:57:55.518+02:00  INFO 19192 --- [cmda-system-management] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T16:57:55.575+02:00  INFO 19192 --- [cmda-system-management] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-05-15T16:57:55.576+02:00  WARN 19192 --- [cmda-system-management] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-05-15T16:57:55.940+02:00  WARN 19192 --- [cmda-system-management] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T16:57:56.466+02:00  INFO 19192 --- [cmda-system-management] [main] o.c.management.configs.SecurityConfig    : Configuration de securite JWT appliquee.
+2026-05-15T16:57:56.772+02:00  INFO 19192 --- [cmda-system-management] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-15T16:57:56.778+02:00  INFO 19192 --- [cmda-system-management] [main] o.c.m.CmdaSystemManagementApplication    : Started CmdaSystemManagementApplication in 4.534 seconds (process running for 4.847)
+2026-05-15T16:58:04.651+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-15T16:58:04.656+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-15T16:58:04.663+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-05-15T16:58:04.770+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T16:58:05.014+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T16:58:05.016+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.m.services.CustomUserDetailsService  : Tentative de chargement de l'utilisateur : adminUser20241108
+2026-05-15T16:58:05.594+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.m.services.CustomUserDetailsService  : Utilisateur trouvé : adminUser20241108 avec le rôle : ADMIN
+2026-05-15T16:58:05.600+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Validation du token pour l'utilisateur : adminUser20241108
+2026-05-15T16:58:05.601+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Extraction du nom d'utilisateur à partir du token
+2026-05-15T16:58:05.607+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Nom d'utilisateur extrait : adminUser20241108
+2026-05-15T16:58:05.608+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Vérification si le token a expiré
+2026-05-15T16:58:05.613+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Le token est encore valide
+2026-05-15T16:58:05.614+02:00  INFO 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.services.JwtTokenService  : Token valide pour l'utilisateur : adminUser20241108
+2026-05-15T17:01:07.254+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:01:09.402+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-5] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:01:11.991+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-7] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:01:12.570+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-6] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:02:55.774+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-10] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:02:56.778+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-1] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:03:06.299+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-9] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:03:07.112+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-3] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:03:14.377+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-4] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:03:15.205+02:00 ERROR 19192 --- [cmda-system-management] [http-nio-8080-exec-5] o.c.management.configs.SecurityConfig    : Unauthorized request - Full authentication is required to access this resource
+2026-05-15T17:05:04.638+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T17:05:04.640+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-05-15T17:05:04.647+02:00  INFO 19192 --- [cmda-system-management] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

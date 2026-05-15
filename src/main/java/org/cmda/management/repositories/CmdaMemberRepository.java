@@ -1,26 +1,53 @@
 package org.cmda.management.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.cmda.management.entities.CmdaMember;
-import java.util.List;
+import org.cmda.management.enums.MemberStatus; // MISE A JOUR : necessaire pour filtrer par statut ACTIVE / INACTIVE / etc.
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.List;
+import java.util.Optional; // MISE A JOUR : necessaire pour verifier le perimetre avant lecture / modification / archivage
 
 public interface CmdaMemberRepository extends JpaRepository<CmdaMember, Long>, JpaSpecificationExecutor<CmdaMember> {
 
-    // Trouver tous les membres
+
     List<CmdaMember> findAll();
 
-    // Trouver les premiers 10 membres
+
     List<CmdaMember> findTop10ByOrderByIdAsc();
 
-    // Rechercher un membre par email
+
     CmdaMember findByEmail(String email);
 
-    // Méthode pour récupérer les membres d'une fraternité avec pagination
+
     Page<CmdaMember> findByFraternityId(Long fraternityId, Pageable pageable);
 
 
+    Page<CmdaMember> findByFraternityRegionId(Long regionId, Pageable pageable);
 
+
+    Page<CmdaMember> findByFraternityRegionProvinceId(Long provinceId, Pageable pageable);
+
+
+    Page<CmdaMember> findByStatus(MemberStatus status, Pageable pageable);
+
+
+    Page<CmdaMember> findByFraternityIdAndStatus(Long fraternityId, MemberStatus status, Pageable pageable);
+
+
+    Page<CmdaMember> findByFraternityRegionIdAndStatus(Long regionId, MemberStatus status, Pageable pageable);
+
+
+    Page<CmdaMember> findByFraternityRegionProvinceIdAndStatus(Long provinceId, MemberStatus status, Pageable pageable);
+
+
+    Optional<CmdaMember> findByIdAndFraternityId(Long id, Long fraternityId);
+
+
+    Optional<CmdaMember> findByIdAndFraternityRegionId(Long id, Long regionId);
+
+
+    Optional<CmdaMember> findByIdAndFraternityRegionProvinceId(Long id, Long provinceId);
 }

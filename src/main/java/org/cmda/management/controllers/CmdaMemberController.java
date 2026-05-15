@@ -10,6 +10,7 @@ import org.cmda.management.dtos.CmdaMemberWithFraternityDTO;
 
 
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.cmda.management.services.CmdaMemberCSVexportService;
@@ -49,6 +50,17 @@ public class CmdaMemberController {
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
 
+
+    /*
+     * MISE A JOUR
+     * Nouvelle route principale pour recuperer les membres visibles
+     * par l'utilisateur connecte.
+     */
+    @GetMapping
+    public ResponseEntity<Page<CmdaMemberDTO>> getMembersForCurrentUser(Pageable pageable) {
+        Page<CmdaMemberDTO> members = cmdaMemberService.getMembersForCurrentUser(pageable);
+        return ResponseEntity.ok(members);
+    }
 
 
 
