@@ -72,13 +72,15 @@ public class CmdaMemberController {
     }
 
 
-    // Endpoint pour supprimer un membre
+    /*
+     * MISE A JOUR
+     * Archive le membre au lieu de le supprimer physiquement.
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
-        cmdaMemberService.deleteCmdaMember(id);
+        cmdaMemberService.archiveCmdaMember(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
 
     // Endpoint pour créer un nouveau membre

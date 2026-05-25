@@ -273,10 +273,24 @@ public class CmdaMemberService {
 
 
 
-    // Supprimer un membre
-    public void deleteCmdaMember(Long id) {
-        cmdaMemberRepository.deleteById(id);
+    /*
+     * MISE A JOUR
+     * Archive logiquement un membre au lieu de le supprimer physiquement.
+     * Le membre doit appartenir au perimetre de l'utilisateur connecte.
+     */
+    public void archiveCmdaMember(Long id) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        CmdaMember cmdaMember = findMemberInCurrentUserScope(id, currentUser);
+        cmdaMember.setStatus(MemberStatus.ARCHIVED);
+
+        cmdaMemberRepository.save(cmdaMember);
     }
+
+
+
+
+
 
     // Méthodes de conversion entre CmdaMember et CmdaMemberDTO
     private CmdaMember convertToEntity(CmdaMemberDTO cmdaMemberDTO) {
@@ -432,7 +446,8 @@ public class CmdaMemberService {
 
         switch (currentUser.getRole()) {
             case ADMIN:
-                return cmdaMemberRepository.findAll(pageable)
+                return cmdaMemberRepository
+                        .findByStatusNot(MemberStatus.ARCHIVED, pageable)
                         .map(this::convertToDTO);
 
             case PROVINCIAL:
@@ -441,7 +456,11 @@ public class CmdaMemberService {
                 }
 
                 return cmdaMemberRepository
-                        .findByFraternityRegionProvinceId(currentUser.getProvince().getId(), pageable)
+                        .findByFraternityRegionProvinceIdAndStatusNot(
+                                currentUser.getProvince().getId(),
+                                MemberStatus.ARCHIVED,
+                                pageable
+                        )
                         .map(this::convertToDTO);
 
             case REGIONAL:
@@ -450,7 +469,11 @@ public class CmdaMemberService {
                 }
 
                 return cmdaMemberRepository
-                        .findByFraternityRegionId(currentUser.getRegion().getId(), pageable)
+                        .findByFraternityRegionIdAndStatusNot(
+                                currentUser.getRegion().getId(),
+                                MemberStatus.ARCHIVED,
+                                pageable
+                        )
                         .map(this::convertToDTO);
 
             case BERGER:
@@ -459,7 +482,11 @@ public class CmdaMemberService {
                 }
 
                 return cmdaMemberRepository
-                        .findByFraternityId(currentUser.getFraternity().getId(), pageable)
+                        .findByFraternityIdAndStatusNot(
+                                currentUser.getFraternity().getId(),
+                                MemberStatus.ARCHIVED,
+                                pageable
+                        )
                         .map(this::convertToDTO);
 
             default:

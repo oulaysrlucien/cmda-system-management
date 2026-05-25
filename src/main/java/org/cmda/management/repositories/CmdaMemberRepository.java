@@ -50,4 +50,17 @@ public interface CmdaMemberRepository extends JpaRepository<CmdaMember, Long>, J
 
 
     Optional<CmdaMember> findByIdAndFraternityRegionProvinceId(Long id, Long provinceId);
+
+
+    // MISE A JOUR : liste globale hors membres archives
+    Page<CmdaMember> findByStatusNot(MemberStatus status, Pageable pageable);
+
+    // MISE A JOUR : liste par fraternite hors membres archives
+    Page<CmdaMember> findByFraternityIdAndStatusNot(Long fraternityId, MemberStatus status, Pageable pageable);
+
+    // MISE A JOUR : liste par region hors membres archives
+    Page<CmdaMember> findByFraternityRegionIdAndStatusNot(Long regionId, MemberStatus status, Pageable pageable);
+
+    // MISE A JOUR : liste par province hors membres archives
+    Page<CmdaMember> findByFraternityRegionProvinceIdAndStatusNot(Long provinceId, MemberStatus status, Pageable pageable);
 }
