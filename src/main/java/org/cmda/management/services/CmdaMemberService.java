@@ -513,6 +513,7 @@ public class CmdaMemberService {
         switch (currentUser.getRole()) {
             case ADMIN:
                 return cmdaMemberRepository.findById(id)
+                        .filter(member -> member.getStatus() != MemberStatus.ARCHIVED)
                         .map(this::convertToDTO);
 
             case PROVINCIAL:
@@ -522,6 +523,7 @@ public class CmdaMemberService {
 
                 return cmdaMemberRepository
                         .findByIdAndFraternityRegionProvinceId(id, currentUser.getProvince().getId())
+                        .filter(member -> member.getStatus() != MemberStatus.ARCHIVED)
                         .map(this::convertToDTO);
 
             case REGIONAL:
@@ -531,6 +533,7 @@ public class CmdaMemberService {
 
                 return cmdaMemberRepository
                         .findByIdAndFraternityRegionId(id, currentUser.getRegion().getId())
+                        .filter(member -> member.getStatus() != MemberStatus.ARCHIVED)
                         .map(this::convertToDTO);
 
             case BERGER:
@@ -540,6 +543,7 @@ public class CmdaMemberService {
 
                 return cmdaMemberRepository
                         .findByIdAndFraternityId(id, currentUser.getFraternity().getId())
+                        .filter(member -> member.getStatus() != MemberStatus.ARCHIVED)
                         .map(this::convertToDTO);
 
             default:
