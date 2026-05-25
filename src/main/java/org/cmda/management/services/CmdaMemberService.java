@@ -21,7 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import org.cmda.management.entities.User; // MISE A JOUR : permet de manipuler l'utilisateur connecte
 
-
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
@@ -113,6 +114,7 @@ public class CmdaMemberService {
 
 
     // Mettre à jour un membre
+    /*
     public CmdaMemberDTO updateCmdaMember(Long id, CmdaMemberDTO cmdaMemberDTO) {
         CmdaMember cmdaMember = cmdaMemberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
@@ -133,7 +135,142 @@ public class CmdaMemberService {
 
         CmdaMember updatedMember = cmdaMemberRepository.save(cmdaMember);
         return convertToDTO(updatedMember); // Conversion de l'entité mise à jour en DTO
+    }*/
+
+
+    /*
+    * Met à jour un membre uniquement s'il appartient au perimetre  de l'utilisateur connectée
+    *
+    * Vérifie aussi que la Fraternité cible appartient au périmètre      */
+    public CmdaMemberDTO updateCmdaMember(Long id, CmdaMemberDTO cmdaMemberDTO) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        CmdaMember cmdaMember = findMemberInCurrentUserScope(id, currentUser);
+
+        cmdaMember.setFirstName(cmdaMemberDTO.getFirstName());
+        cmdaMember.setLastName(cmdaMemberDTO.getLastName());
+        cmdaMember.setEmail(cmdaMemberDTO.getEmail());
+        cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
+        cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
+        cmdaMember.setProfession(cmdaMemberDTO.getProfession());
+        cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
+
+        if (cmdaMemberDTO.getFraternityId() != null) {
+            Fraternity targetFraternity = findTargetFraternityInCurrentUserScope(
+                    cmdaMemberDTO.getFraternityId(),
+                    currentUser
+            );
+
+            cmdaMember.setFraternity(targetFraternity);
+        }
+
+        CmdaMember updatedMember = cmdaMemberRepository.save(cmdaMember);
+        return convertToDTO(updatedMember);
     }
+
+
+
+
+
+    /*
+     * MISE A JOUR
+     * Recupere le membre uniquement s'il appartient au perimetre
+     * de l'utilisateur connecte.
+     */
+    private CmdaMember findMemberInCurrentUserScope(Long memberId, User currentUser) {
+        switch (currentUser.getRole()) {
+            case ADMIN:
+                return cmdaMemberRepository.findById(memberId)
+                        .orElseThrow(() -> notFound("Member not found"));
+
+            case PROVINCIAL:
+                if (currentUser.getProvince() == null) {
+                    throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityRegionProvinceId(memberId, currentUser.getProvince().getId())
+                        .orElseThrow(() -> notFound("Member not found"));
+
+            case REGIONAL:
+                if (currentUser.getRegion() == null) {
+                    throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityRegionId(memberId, currentUser.getRegion().getId())
+                        .orElseThrow(() -> notFound("Member not found"));
+
+            case BERGER:
+                if (currentUser.getFraternity() == null) {
+                    throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                }
+
+                return cmdaMemberRepository
+                        .findByIdAndFraternityId(memberId, currentUser.getFraternity().getId())
+                        .orElseThrow(() -> notFound("Member not found"));
+
+            default:
+                throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+        }
+    }
+
+
+
+
+    /*
+     * MISE A JOUR
+     * Recupere la fraternite cible uniquement si elle appartient
+     * au perimetre de l'utilisateur connecte.
+     */
+    private Fraternity findTargetFraternityInCurrentUserScope(Long fraternityId, User currentUser) {
+        switch (currentUser.getRole()) {
+            case ADMIN:
+                return fraternityRepository.findById(fraternityId)
+                        .orElseThrow(() -> notFound("Fraternity not found"));
+
+            case PROVINCIAL:
+                if (currentUser.getProvince() == null) {
+                    throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                }
+
+                return fraternityRepository
+                        .findByIdAndRegionProvinceId(fraternityId, currentUser.getProvince().getId())
+                        .orElseThrow(() -> notFound("Fraternity not found"));
+
+            case REGIONAL:
+                if (currentUser.getRegion() == null) {
+                    throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                }
+
+                return fraternityRepository
+                        .findByIdAndRegionId(fraternityId, currentUser.getRegion().getId())
+                        .orElseThrow(() -> notFound("Fraternity not found"));
+
+            case BERGER:
+                if (currentUser.getFraternity() == null) {
+                    throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                }
+
+                if (!currentUser.getFraternity().getId().equals(fraternityId)) {
+                    throw notFound("Fraternity not found");
+                }
+
+                return fraternityRepository.findById(fraternityId)
+                        .orElseThrow(() -> notFound("Fraternity not found"));
+
+            default:
+                throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+        }
+    }
+
+
+
+
+    private ResponseStatusException notFound(String message) {
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+    }
+
 
 
     // Supprimer un membre
