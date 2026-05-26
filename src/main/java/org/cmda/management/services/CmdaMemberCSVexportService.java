@@ -27,7 +27,12 @@ public class CmdaMemberCSVexportService {
 
     // Méthode pour générer le CSV
     public String exportMembersToCSV(Long fraternityId, String firstName, String lastName, String profession) {
-        List<CmdaMemberDTO> members = cmdaMemberService.getFilteredMembers(fraternityId, firstName, lastName, profession);
+        List<CmdaMemberDTO> members = cmdaMemberService.getMembersForCurrentUserExport(
+                fraternityId,
+                firstName,
+                lastName,
+                profession
+        );
         StringWriter writer = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(writer);
 

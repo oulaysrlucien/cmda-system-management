@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.cmda.management.dtos.CmdaMemberWithFraternityDTO;
 
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 import org.springframework.data.domain.Page;
@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/members")
+@Tag(name = "Members", description = "Gestion Métier des Membres")
 public class CmdaMemberController {
 
     @Autowired

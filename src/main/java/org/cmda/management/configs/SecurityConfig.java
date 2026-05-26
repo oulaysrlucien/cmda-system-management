@@ -62,7 +62,16 @@ public class SecurityConfig {
                         .requestMatchers("/regions/**").authenticated()
                         .requestMatchers("/fraternities/**").authenticated()
 
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+
                         .anyRequest().authenticated()
+
+
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint()));

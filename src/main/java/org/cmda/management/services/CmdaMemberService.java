@@ -42,11 +42,26 @@ public class CmdaMemberService {
 
 
     // Créer un membre
-    public CmdaMemberDTO saveCmdaMember(CmdaMemberDTO cmdaMemberDTO) {
+      public CmdaMemberDTO saveCmdaMember(CmdaMemberDTO cmdaMemberDTO) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        Fraternity targetFraternity = findTargetFraternityInCurrentUserScope(
+                cmdaMemberDTO.getFraternityId(),
+                currentUser
+        );
+
         CmdaMember cmdaMember = convertToEntity(cmdaMemberDTO);
+        cmdaMember.setFraternity(targetFraternity);
+
         CmdaMember savedMember = cmdaMemberRepository.save(cmdaMember);
         return convertToDTO(savedMember);
     }
+
+
+
+
+
+
 
     // Lire les membres
     public List<CmdaMemberDTO> getAllMembers() {
@@ -113,29 +128,7 @@ public class CmdaMemberService {
     }
 
 
-    // Mettre à jour un membre
-    /*
-    public CmdaMemberDTO updateCmdaMember(Long id, CmdaMemberDTO cmdaMemberDTO) {
-        CmdaMember cmdaMember = cmdaMemberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        // Mettre à jour les champs
-        cmdaMember.setFirstName(cmdaMemberDTO.getFirstName());
-        cmdaMember.setLastName(cmdaMemberDTO.getLastName());
-        cmdaMember.setEmail(cmdaMemberDTO.getEmail());
-        cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
-        cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
-        cmdaMember.setProfession(cmdaMemberDTO.getProfession());
-        cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
-
-        // Récupérer la Fraternity à partir de l'ID fourni
-        Fraternity fraternity = fraternityRepository.findById(cmdaMemberDTO.getFraternityId())
-                .orElseThrow(() -> new RuntimeException("Fraternity not found"));
-        cmdaMember.setFraternity(fraternity);
-
-        CmdaMember updatedMember = cmdaMemberRepository.save(cmdaMember);
-        return convertToDTO(updatedMember); // Conversion de l'entité mise à jour en DTO
-    }*/
 
 
     /*
@@ -147,13 +140,18 @@ public class CmdaMemberService {
 
         CmdaMember cmdaMember = findMemberInCurrentUserScope(id, currentUser);
 
+        if (cmdaMember.getStatus() == MemberStatus.ARCHIVED) {
+            throw notFound("Member not found");
+        }
+
+
         cmdaMember.setFirstName(cmdaMemberDTO.getFirstName());
         cmdaMember.setLastName(cmdaMemberDTO.getLastName());
         cmdaMember.setEmail(cmdaMemberDTO.getEmail());
         cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
         cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
         cmdaMember.setProfession(cmdaMemberDTO.getProfession());
-        cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
+       // cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
 
         if (cmdaMemberDTO.getFraternityId() != null) {
             Fraternity targetFraternity = findTargetFraternityInCurrentUserScope(
@@ -303,10 +301,7 @@ public class CmdaMemberService {
         cmdaMember.setProfession(cmdaMemberDTO.getProfession());
         cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
 
-        // Récupérer la Fraternity à partir de l'ID fourni
-        Fraternity fraternity = fraternityRepository.findById(cmdaMemberDTO.getFraternityId())
-                .orElseThrow(() -> new RuntimeException("Fraternity not found"));
-        cmdaMember.setFraternity(fraternity);
+
 
         return cmdaMember;
     }
@@ -409,6 +404,114 @@ public class CmdaMemberService {
                     return dto;
                 });
     }
+
+
+
+
+
+
+
+
+    /*
+     * MISE A JOUR
+     * Export securise des membres selon le perimetre de l'utilisateur connecte.
+     *
+     * Le frontend peut envoyer des filtres, mais le perimetre metier
+     * reste toujours impose par le backend.
+     */
+    public List<CmdaMemberDTO> getMembersForCurrentUserExport(
+            Long fraternityId,
+            String firstName,
+            String lastName,
+            String profession
+    ) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        Specification<CmdaMember> spec = (root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            // Exclure les membres archives
+            predicates.add(criteriaBuilder.notEqual(root.get("status"), MemberStatus.ARCHIVED));
+
+            // Perimetre metier selon le role
+            switch (currentUser.getRole()) {
+                case ADMIN:
+                    break;
+
+                case PROVINCIAL:
+                    if (currentUser.getProvince() == null) {
+                        throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("region").get("province").get("id"),
+                            currentUser.getProvince().getId()
+                    ));
+                    break;
+
+                case REGIONAL:
+                    if (currentUser.getRegion() == null) {
+                        throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("region").get("id"),
+                            currentUser.getRegion().getId()
+                    ));
+                    break;
+
+                case BERGER:
+                    if (currentUser.getFraternity() == null) {
+                        throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("id"),
+                            currentUser.getFraternity().getId()
+                    ));
+                    break;
+
+                default:
+                    throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+            }
+
+            // Filtres optionnels demandes par le frontend
+            if (fraternityId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("fraternity").get("id"), fraternityId));
+            }
+
+            if (firstName != null && !firstName.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("firstName")),
+                        "%" + firstName.toLowerCase() + "%"
+                ));
+            }
+
+            if (lastName != null && !lastName.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("lastName")),
+                        "%" + lastName.toLowerCase() + "%"
+                ));
+            }
+
+            if (profession != null && !profession.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("profession")),
+                        "%" + profession.toLowerCase() + "%"
+                ));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return cmdaMemberRepository.findAll(spec)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+
+
+
+
 
 
     //
