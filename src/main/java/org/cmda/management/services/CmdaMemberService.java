@@ -311,6 +311,29 @@ public class CmdaMemberService {
 
 
 
+    /*
+     * ADMINISTRATION METIER
+     * Retourne uniquement les membres archives.
+     * Reserve a ADMIN via le controller.
+     */
+    public List<CmdaMemberDTO> getArchivedMembersForAdministration() {
+        List<CmdaMember> members = cmdaMemberRepository.findAll();
+
+        List<CmdaMemberDTO> memberDTOs = new ArrayList<>();
+
+        for (CmdaMember member : members) {
+            if (member.getStatus() == MemberStatus.ARCHIVED) {
+                memberDTOs.add(convertToDTO(member));
+            }
+        }
+
+        return memberDTOs;
+    }
+
+
+
+
+
 
     // Méthodes de conversion entre CmdaMember et CmdaMemberDTO
     private CmdaMember convertToEntity(CmdaMemberDTO cmdaMemberDTO) {

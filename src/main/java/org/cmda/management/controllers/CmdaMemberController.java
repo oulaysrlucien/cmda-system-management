@@ -148,6 +148,22 @@ public class CmdaMemberController {
 
 
 
+    /*
+     * ADMINISTRATION METIER
+     * Retourne les membres archives.
+     * Reserve a ADMIN.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/archived")
+    public ResponseEntity<List<CmdaMemberDTO>> getArchivedMembers() {
+        List<CmdaMemberDTO> members = cmdaMemberService.getArchivedMembersForAdministration();
+        return ResponseEntity.ok(members);
+    }
+
+
+
+
+
 
 
 
