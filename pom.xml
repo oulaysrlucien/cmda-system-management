@@ -105,8 +105,7 @@
 		</dependency>
 
 
-		<!-- -->
-		<!--
+		<!-- EXCEL EXPORT -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -117,7 +116,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>5.2.2</version>
 		</dependency>
-		-->
+		<!-- FIN EXCEL EXPORT -->
 
 		<!-- -->
 		<dependency>

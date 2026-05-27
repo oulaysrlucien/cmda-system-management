@@ -14,7 +14,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.cmda.management.services.CmdaMemberCSVexportService;
+import org.cmda.management.services.CmdaMemberExcelExportService;
+import org.cmda.management.services.CmdaMemberPdfExportService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import org.springframework.data.domain.PageRequest;
 
@@ -135,6 +138,12 @@ public class CmdaMemberController {
     @Autowired
     private CmdaMemberCSVexportService cmdaMemberCSVexportService;
 
+    @Autowired
+    private CmdaMemberExcelExportService cmdaMemberExcelExportService;
+
+    @Autowired
+    private CmdaMemberPdfExportService cmdaMemberPdfExportService;
+
     // Endpoint pour exporter les membres en CSV
     @GetMapping("/export/csv")
     public ResponseEntity<String> exportMembersToCSV(
@@ -153,9 +162,49 @@ public class CmdaMemberController {
 
 
     // Endpoint pour exporter les membres en EXCEL
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportMembersToExcel(
+            @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String profession) {
+
+        byte[] excelContent = cmdaMemberExcelExportService.exportMembersToExcel(
+                fraternityId,
+                firstName,
+                lastName,
+                profession
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=members.xlsx");
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+
+        return new ResponseEntity<>(excelContent, headers, HttpStatus.OK);
+    }
 
 
     // Endpoint pour exporter les membres en PDF
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportMembersToPdf(
+            @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String profession) {
+
+        byte[] pdfContent = cmdaMemberPdfExportService.exportMembersToPdf(
+                fraternityId,
+                firstName,
+                lastName,
+                profession
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=members.pdf");
+        headers.setContentType(MediaType.APPLICATION_PDF);
+
+        return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+    }
 
 
 
