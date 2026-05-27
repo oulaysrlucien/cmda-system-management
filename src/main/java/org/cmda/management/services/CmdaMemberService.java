@@ -825,6 +825,32 @@ public class CmdaMemberService {
 
 
 
+    /*
+     * CRUD METIER
+     * Restaure un membre archive.
+     *
+     * Regles :
+     * - reserve a ADMIN via le controller
+     * - restaure uniquement les membres ARCHIVED
+     * - remet le statut a ACTIVE
+     */
+    public CmdaMemberDTO restoreMember(Long id) {
+        CmdaMember cmdaMember = cmdaMemberRepository.findById(id)
+                .orElseThrow(() -> notFound("Member not found"));
+
+        if (cmdaMember.getStatus() != MemberStatus.ARCHIVED) {
+            throw notFound("Member not found");
+        }
+
+        cmdaMember.setStatus(MemberStatus.ACTIVE);
+
+        CmdaMember savedMember = cmdaMemberRepository.save(cmdaMember);
+        return convertToDTO(savedMember);
+    }
+
+
+
+
 
     /*
      * MISE A JOUR

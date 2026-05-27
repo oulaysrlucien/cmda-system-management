@@ -195,6 +195,35 @@ public class CmdaMemberController {
 
 
 
+    /*
+     * CRUD METIER
+     * Restaure un membre archive.
+     * Reserve a ADMIN.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<CmdaMemberDTO> restoreMember(@PathVariable Long id) {
+        CmdaMemberDTO restoredMember = cmdaMemberService.restoreMember(id);
+        return ResponseEntity.ok(restoredMember);
+    }
+
+
+
+
+    /*
+     * CRUD METIER
+     * Archive un membre sans suppression physique.
+     */
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<Void> archiveMember(@PathVariable Long id) {
+        cmdaMemberService.archiveCmdaMember(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
+
+
 
 
     // Endpoint pour récupérer un membre par son ID
