@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
                         .requestMatchers("/members/**").authenticated()
-                        .requestMatchers("/provinces/**").authenticated()
+                        .requestMatchers("/provinces/**").hasRole("ADMIN")
                         .requestMatchers("/regions/**").authenticated()
                         .requestMatchers("/fraternities/**").authenticated()
 

@@ -25,6 +25,7 @@ public class ProvincialController {
     private ProvinceService provinceService;
 
     // Créer une province
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Province> createProvince(@RequestBody Province province) {
         Province createdProvince = provinceService.createProvince(province);
@@ -32,7 +33,7 @@ public class ProvincialController {
     }
 
     // Lire toutes les provinces avec leurs régions, fraternities, et members
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PROVINCIAL')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<ProvinceDTO>> getAllProvinces() {
         logger.info("Requête pour obtenir toutes les provinces reçue.");
@@ -42,6 +43,7 @@ public class ProvincialController {
     }
 
     // Lire une province par ID avec ses régions, fraternities, et members
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ProvinceDTO> getProvinceById(@PathVariable Long id) {
         ProvinceDTO province = provinceService.getProvinceById(id);
@@ -49,6 +51,7 @@ public class ProvincialController {
     }
 
     // Mettre à jour une province
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<Province> updateProvince(@PathVariable Long id, @RequestBody Province provinceDetails) {
         Province updatedProvince = provinceService.updateProvince(id, provinceDetails);
@@ -56,6 +59,7 @@ public class ProvincialController {
     }
 
     // Supprimer une province
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProvince(@PathVariable Long id) {
         provinceService.deleteProvince(id);
