@@ -72,11 +72,13 @@ public class UserService {
 
         User user = new User();
         user.setUsername(userDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Hachage du mot de passe
-        user.setRole(Role.valueOf(userDTO.getRole()));  // Conversion du rôle
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        Role role = Role.valueOf(userDTO.getRole().toUpperCase());
+        user.setRole(role);
 
         // Gestion des entités associées en fonction du rôle
-        switch (Role.valueOf(userDTO.getRole())) {
+        switch (role) {
             case PROVINCIAL:
                 handleProvincialUser(userDTO, user);
                 break;
@@ -99,50 +101,40 @@ public class UserService {
 
     // Gestion du Provincial
     private void handleProvincialUser(UserCreationDTO userDTO, User user) {
-        logger.info("Associating Province with ID {} to the Provincial user.", userDTO.getProvinceId());
-        if (userDTO.getProvinceId() != null) {
-            user.setProvince(provinceRepository.findById(userDTO.getProvinceId())
-                    .orElseThrow(() -> {
-                        logger.error("Province with ID {} not found.", userDTO.getProvinceId());
-                        return new RuntimeException("Province not found");
-                    }));
-            logger.info("Province associated successfully.");
+        if (userDTO.getProvinceId() == null) {
+            throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
         }
+
+        user.setProvince(provinceRepository.findById(userDTO.getProvinceId())
+                .orElseThrow(() -> new RuntimeException("Province not found")));
     }
 
 
     // Gestion du Regional
     private void handleRegionalUser(UserCreationDTO userDTO, User user) {
-        if (userDTO.getRegionId() != null) {
-            logger.info("Tentative de récupération de la région avec ID: {}", userDTO.getRegionId());
-            Region region = regionRepository.findById(userDTO.getRegionId())
-                    .orElseThrow(() -> {
-                        logger.error("Région avec ID {} introuvable", userDTO.getRegionId());
-                        return new RuntimeException("Region not found");
-                    });
-            user.setRegion(region);
-            user.setProvince(region.getProvince());
-            logger.info("Utilisateur régional associé à la région '{}' et à la province '{}'",
-                    region.getName(), region.getProvince().getName());
-        } else {
-            logger.warn("Aucun ID de région fourni pour l'utilisateur régional.");
+        if (userDTO.getRegionId() == null) {
+            throw new IllegalArgumentException("Un utilisateur REGIONAL doit etre rattache a une region.");
         }
+
+        Region region = regionRepository.findById(userDTO.getRegionId())
+                .orElseThrow(() -> new RuntimeException("Region not found"));
+
+        user.setRegion(region);
+        user.setProvince(region.getProvince());
     }
+
+
 
     // Gestion du Berger
     private void handleBergerUser(UserCreationDTO userDTO, User user) {
-        if (userDTO.getFraternityId() != null) {
-            logger.info("Tentative de récupération de la fraternité avec ID: {}", userDTO.getFraternityId());
-            Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
-                    .orElseThrow(() -> {
-                        logger.error("Fraternité avec ID {} introuvable", userDTO.getFraternityId());
-                        return new RuntimeException("Fraternity not found");
-                    });
-            user.setFraternity(fraternity);
-            logger.info("Utilisateur berger associé à la fraternité '{}'", fraternity.getName());
-        } else {
-            logger.warn("Aucun ID de fraternité fourni pour l'utilisateur berger.");
+        if (userDTO.getFraternityId() == null) {
+            throw new IllegalArgumentException("Un utilisateur BERGER doit etre rattache a une fraternite.");
         }
+
+        Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
+                .orElseThrow(() -> new RuntimeException("Fraternity not found"));
+
+        user.setFraternity(fraternity);
     }
 
 
@@ -329,35 +321,53 @@ public class UserService {
                 });
 
         existingUser.setUsername(userDTO.getUsername());
-        existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Mise à jour du mot de passe encodé
-        existingUser.setRole(Role.valueOf(userDTO.getRole().toUpperCase()));  // Mise à jour du rôle
+        existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-        // Gestion des entités associées en fonction du rôle (province, région, fraternité)
-        switch (Role.valueOf(userDTO.getRole())) {
+        Role role = Role.valueOf(userDTO.getRole().toUpperCase());
+        existingUser.setRole(role);
+
+// Nettoyer les anciens rattachements avant d'appliquer le nouveau role
+        existingUser.setProvince(null);
+        existingUser.setRegion(null);
+        existingUser.setFraternity(null);
+
+        switch (role) {
             case PROVINCIAL:
-                if (userDTO.getProvinceId() != null) {
-                    logger.info("Updating Provincial with Province ID: {}", userDTO.getProvinceId());
-                    existingUser.setProvince(provinceRepository.findById(userDTO.getProvinceId())
-                            .orElseThrow(() -> new RuntimeException("Province not found")));
+                if (userDTO.getProvinceId() == null) {
+                    throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
                 }
+
+                existingUser.setProvince(provinceRepository.findById(userDTO.getProvinceId())
+                        .orElseThrow(() -> new RuntimeException("Province not found")));
                 break;
+
             case REGIONAL:
-                if (userDTO.getRegionId() != null) {
-                    logger.info("Updating Regional with Region ID: {}", userDTO.getRegionId());
-                    existingUser.setRegion(regionRepository.findById(userDTO.getRegionId())
-                            .orElseThrow(() -> new RuntimeException("Region not found")));
+                if (userDTO.getRegionId() == null) {
+                    throw new IllegalArgumentException("Un utilisateur REGIONAL doit etre rattache a une region.");
                 }
+
+                Region region = regionRepository.findById(userDTO.getRegionId())
+                        .orElseThrow(() -> new RuntimeException("Region not found"));
+
+                existingUser.setRegion(region);
+                existingUser.setProvince(region.getProvince());
                 break;
+
             case BERGER:
-                if (userDTO.getFraternityId() != null) {
-                    logger.info("Updating Berger with Fraternity ID: {}", userDTO.getFraternityId());
-                    existingUser.setFraternity(fraternityRepository.findById(userDTO.getFraternityId())
-                            .orElseThrow(() -> new RuntimeException("Fraternity not found")));
+                if (userDTO.getFraternityId() == null) {
+                    throw new IllegalArgumentException("Un utilisateur BERGER doit etre rattache a une fraternite.");
                 }
+
+                Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
+                        .orElseThrow(() -> new RuntimeException("Fraternity not found"));
+
+                existingUser.setFraternity(fraternity);
                 break;
+
             case ADMIN:
                 logger.info("Admin user updated without additional associations.");
                 break;
+
             default:
                 throw new IllegalArgumentException("Invalid role specified");
         }

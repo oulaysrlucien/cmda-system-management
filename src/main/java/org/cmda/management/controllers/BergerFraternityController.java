@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +22,7 @@ public class BergerFraternityController {
     private FraternityService fraternityService;
 
     // Créer une fraternité
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<FraternityDTO> createFraternity(@RequestBody FraternityDTO fraternityDTO) {
         FraternityDTO createdFraternity = fraternityService.createFraternity(fraternityDTO);
@@ -29,6 +30,7 @@ public class BergerFraternityController {
     }
 
     // Lire toutes les fraternités
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<FraternityDTO>> getAllFraternities() {
         List<FraternityDTO> fraternities = fraternityService.getAllFraternities();
@@ -36,6 +38,7 @@ public class BergerFraternityController {
     }
 
     // Lire une fraternité par ID
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<FraternityDTO> getFraternityById(@PathVariable Long id) {
         Optional<FraternityDTO> fraternityDTO = fraternityService.getFraternityById(id);
@@ -44,6 +47,7 @@ public class BergerFraternityController {
     }
 
     // Mettre à jour une fraternité
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<FraternityDTO> updateFraternity(@PathVariable Long id, @RequestBody FraternityDTO fraternityDTO) {
         FraternityDTO updatedFraternity = fraternityService.updateFraternity(id, fraternityDTO);
@@ -51,6 +55,7 @@ public class BergerFraternityController {
     }
 
     // Supprimer une fraternité
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteFraternity(@PathVariable Long id) {
         fraternityService.deleteFraternity(id);
@@ -58,6 +63,7 @@ public class BergerFraternityController {
     }
 
     // Lire les fraternités par région
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/region/{regionId}")
     public ResponseEntity<List<FraternityDTO>> getFraternitiesByRegion(@PathVariable Long regionId) {
         List<FraternityDTO> fraternities = fraternityService.getFraternitiesByRegion(regionId);

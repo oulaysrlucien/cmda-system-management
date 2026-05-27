@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// PreAuthorize
+import org.springframework.security.access.prepost.PreAuthorize;
 
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class RegionalController {
     private RegionService regionService;
 
     // Créer une région
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<RegionDTO> createRegion(@RequestBody RegionDTO regionDTO) {
         RegionDTO createdRegion = regionService.createRegion(regionDTO);
@@ -31,6 +34,7 @@ public class RegionalController {
 
 
     // Lire toutes les régions
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<RegionDTO>> getAllRegions() {
         List<RegionDTO> regions = regionService.getAllRegions();
@@ -38,6 +42,7 @@ public class RegionalController {
     }
 
     // Lire une région par ID
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Region> getRegionById(@PathVariable Long id) {
         Optional<Region> region = regionService.getRegionById(id);
@@ -46,13 +51,8 @@ public class RegionalController {
     }
 
     // Mettre à jour une région
-    /*
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Region> updateRegion(@PathVariable Long id, @RequestBody Region regionDetails) {
-        Region updatedRegion = regionService.updateRegion(id, regionDetails);
-        return new ResponseEntity<>(updatedRegion, HttpStatus.OK);
-    }
-    */
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<RegionDTO> updateRegion(@PathVariable Long id, @RequestBody RegionDTO regionDTO) {
         //Region updatedRegion = regionService.updateRegion(id, regionDTO);
@@ -63,6 +63,7 @@ public class RegionalController {
 
 
     // Supprimer une région
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
         regionService.deleteRegion(id);
@@ -70,6 +71,7 @@ public class RegionalController {
     }
 
     // Lire les régions par province
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/province/{provinceId}")
     public ResponseEntity<List<Region>> getRegionsByProvince(@PathVariable Long provinceId) {
         List<Region> regions = regionService.getRegionsByProvince(provinceId);

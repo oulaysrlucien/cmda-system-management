@@ -1,17 +1,22 @@
 package org.cmda.management.controllers;
 
+import org.cmda.management.dtos.UserCreationDTO;
+import org.cmda.management.dtos.UserDTO;
 import org.cmda.management.entities.User;
 import org.cmda.management.enums.Role;
 import org.cmda.management.services.UserService;
-import org.cmda.management.dtos.UserDTO;
-import org.cmda.management.dtos.UserCreationDTO;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,80 +27,57 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Méthode pour créer un utilisateur
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserCreationDTO userCreationDTO) {
-        try {
-            User user = userService.saveUser(userCreationDTO);
-            UserDTO userDTO = userService.convertToDTO(user);  // Convertir User en UserDTO avec les détails
-            return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        User user = userService.saveUser(userCreationDTO);
+        UserDTO userDTO = userService.convertToDTO(user);
+        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
     }
 
-    // Méthode pour obtenir tous les utilisateurs
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        try {
-            List<UserDTO> users = userService.getAllUsers();  // Utilisation de UserDTO pour renvoyer des détails
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<UserDTO> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // Méthode pour obtenir un utilisateur par rôle
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/role/{role}")
     public ResponseEntity<List<UserDTO>> getUsersByRole(@PathVariable Role role) {
-        try {
-            List<UserDTO> users = userService.findByRoleDTO(role);  // Utilisation de DTO pour obtenir les utilisateurs par rôle
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<UserDTO> users = userService.findByRoleDTO(role);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // Méthode pour obtenir un utilisateur par son ID
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        try {
-            UserDTO userDTO = userService.findUserByIdDTO(id);  // Obtenir les détails d'un utilisateur par son ID
-            if (userDTO != null) {
-                return new ResponseEntity<>(userDTO, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        UserDTO userDTO = userService.findUserByIdDTO(id);
+
+        if (userDTO != null) {
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // Méthode pour supprimer un utilisateur par ID
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Méthode pour mettre à jour un utilisateur (si nécessaire)
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
-        try {
-            User updatedUser = userService.updateUser(id, userCreationDTO);
-            if (updatedUser != null) {
-                UserDTO userDTO = userService.convertToDTO(updatedUser);  // Conversion de l'utilisateur mis à jour en DTO
-                return new ResponseEntity<>(userDTO, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        User updatedUser = userService.updateUser(id, userCreationDTO);
+
+        if (updatedUser != null) {
+            UserDTO userDTO = userService.convertToDTO(updatedUser);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

@@ -30,6 +30,10 @@ public class RegionService {
         region.setName(regionDTO.getName());
         region.setDescription(regionDTO.getDescription());
 
+        if (regionDTO.getProvinceId() == null) {
+            throw new IllegalArgumentException("Une region doit etre rattachee a une province existante.");
+        }
+
         Province province = provinceRepository.findById(regionDTO.getProvinceId())
                 .orElseThrow(() -> new RuntimeException("Province not found"));
         region.setProvince(province);
@@ -118,6 +122,10 @@ public class RegionService {
         // Récupérer la région par son ID
         Region region = regionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Region not found"));
+
+        if (regionDTO.getProvinceId() == null) {
+            throw new IllegalArgumentException("Une region doit etre rattachee a une province existante.");
+        }
 
         // Vérifier et mettre à jour la province associée
         Province province = provinceRepository.findById(regionDTO.getProvinceId())

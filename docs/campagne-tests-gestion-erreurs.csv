@@ -1,0 +1,97 @@
+ID;Categorie;Collection Postman;Role;Methode;Endpoint;Precondition;Body ou Params;Resultat attendu;Code attendu;Resultat obtenu;Code obtenu;Statut OK_KO;Commentaire
+ERR-001;Authentification;AUTH;ANONYME;GET;/members;Aucun Bearer Token;Aucun;Acces refuse car utilisateur non connecte;401;;;;Verifie que 401 signifie non authentifie
+ERR-002;Authentification;AUTH;ANONYME;GET;/members;Bearer Token absent;Authorization vide;Acces refuse car utilisateur non connecte;401;;;;
+ERR-003;Authentification;AUTH;ANONYME;GET;/members;Bearer Token invalide;Authorization Bearer invalid.token;Acces refuse car token invalide;401;;;;
+ERR-004;Authentification;AUTH;ANONYME;GET;/members;Bearer Token expire;Authorization Bearer token_expire;Acces refuse car token expire;401;;;;
+ERR-005;Authentification;AUTH;ANONYME;POST;/api/authenticate;Identifiants invalides;username/password invalides;Authentification refusee;401;;;;
+ERR-006;Authentification;AUTH;ANONYME;POST;/api/authenticate;Identifiants valides;username/password valides;Token JWT retourne;200;;;;Cas nominal
+ERR-007;Autorisation role;MEMBERS > ADMINISTRATION METIER;REGIONAL;GET;/members/all;Token REGIONAL valide;Aucun;Acces interdit route admin;403;;;;Doit etre 403 et non 401
+ERR-008;Autorisation role;MEMBERS > ADMINISTRATION METIER;PROVINCIAL;GET;/members/all;Token PROVINCIAL valide;Aucun;Acces interdit route admin;403;;;;
+ERR-009;Autorisation role;MEMBERS > ADMINISTRATION METIER;BERGER;GET;/members/all;Token BERGER valide;Aucun;Acces interdit route admin;403;;;;
+ERR-010;Autorisation role;USERS;REGIONAL;POST;/api/users;Token REGIONAL valide;UserCreationDTO valide;Acces interdit creation user;403;;;;
+ERR-011;Autorisation role;USERS;PROVINCIAL;POST;/api/users;Token PROVINCIAL valide;UserCreationDTO valide;Acces interdit creation user;403;;;;
+ERR-012;Autorisation role;USERS;BERGER;POST;/api/users;Token BERGER valide;UserCreationDTO valide;Acces interdit creation user;403;;;;
+ERR-013;Autorisation role;PROVINCES;PROVINCIAL;POST;/provinces/create;Token PROVINCIAL valide;ProvinceDTO valide;Acces interdit creation province;403;;;;
+ERR-014;Autorisation role;PROVINCES;REGIONAL;POST;/provinces/create;Token REGIONAL valide;ProvinceDTO valide;Acces interdit creation province;403;;;;
+ERR-015;Autorisation role;REGIONS;REGIONAL;POST;/regions/create;Token REGIONAL valide;RegionDTO avec provinceId;Acces interdit creation region;403;;;;
+ERR-016;Autorisation role;FRATERNITIES;BERGER;POST;/fraternities/create;Token BERGER valide;FraternityDTO avec regionId;Acces interdit creation fraternity;403;;;;
+ERR-017;Perimetre membre;MEMBERS > CRUD METIER;BERGER;GET;/members/{id};Membre hors fraternite du BERGER;id hors perimetre;Ressource invisible hors perimetre;404;;;;Doit rester 404 pour ne pas exposer la ressource
+ERR-018;Perimetre membre;MEMBERS > CRUD METIER;REGIONAL;GET;/members/{id};Membre hors region du REGIONAL;id hors perimetre;Ressource invisible hors perimetre;404;;;;
+ERR-019;Perimetre membre;MEMBERS > CRUD METIER;PROVINCIAL;GET;/members/{id};Membre hors province du PROVINCIAL;id hors perimetre;Ressource invisible hors perimetre;404;;;;
+ERR-020;Perimetre membre;MEMBERS > CRUD METIER;BERGER;PUT;/members/update/{id};Membre hors fraternite du BERGER;CmdaMemberDTO valide;Modification refusee hors perimetre;404;;;;
+ERR-021;Perimetre membre;MEMBERS > CRUD METIER;REGIONAL;PUT;/members/update/{id};Membre hors region du REGIONAL;CmdaMemberDTO valide;Modification refusee hors perimetre;404;;;;
+ERR-022;Perimetre membre;MEMBERS > CRUD METIER;PROVINCIAL;PUT;/members/update/{id};Membre hors province du PROVINCIAL;CmdaMemberDTO valide;Modification refusee hors perimetre;404;;;;
+ERR-023;Perimetre membre;MEMBERS > CRUD METIER;BERGER;PATCH;/members/{id}/archive;Membre hors fraternite du BERGER;Aucun;Archivage refuse hors perimetre;404;;;;
+ERR-024;Perimetre membre;MEMBERS > CRUD METIER;REGIONAL;PATCH;/members/{id}/archive;Membre hors region du REGIONAL;Aucun;Archivage refuse hors perimetre;404;;;;
+ERR-025;Perimetre membre;MEMBERS > CRUD METIER;PROVINCIAL;PATCH;/members/{id}/archive;Membre hors province du PROVINCIAL;Aucun;Archivage refuse hors perimetre;404;;;;
+ERR-026;Perimetre fraternityId;MEMBERS > CRUD METIER;BERGER;POST;/members/create;BERGER token valide;fraternityId hors fraternite;Creation refusee hors perimetre;404;;;;Ne jamais faire confiance au frontend
+ERR-027;Perimetre fraternityId;MEMBERS > CRUD METIER;REGIONAL;POST;/members/create;REGIONAL token valide;fraternityId hors region;Creation refusee hors perimetre;404;;;;
+ERR-028;Perimetre fraternityId;MEMBERS > CRUD METIER;PROVINCIAL;POST;/members/create;PROVINCIAL token valide;fraternityId hors province;Creation refusee hors perimetre;404;;;;
+ERR-029;Perimetre fraternityId;MEMBERS > CRUD METIER;BERGER;PUT;/members/update/{id};Membre dans perimetre;fraternityId autre fraternite;Deplacement refuse hors perimetre;404;;;;
+ERR-030;Perimetre fraternityId;MEMBERS > CRUD METIER;REGIONAL;PUT;/members/update/{id};Membre dans perimetre;fraternityId hors region;Deplacement refuse hors perimetre;404;;;;
+ERR-031;Perimetre fraternityId;MEMBERS > CRUD METIER;PROVINCIAL;PUT;/members/update/{id};Membre dans perimetre;fraternityId hors province;Deplacement refuse hors perimetre;404;;;;
+ERR-032;Archivage;MEMBERS > CRUD METIER;BERGER;PATCH;/members/{id}/archive;Membre actif dans fraternite du BERGER;Aucun;Membre archive;204;;;;Cas nominal
+ERR-033;Archivage;MEMBERS > CRUD METIER;REGIONAL;PATCH;/members/{id}/archive;Membre actif dans region du REGIONAL;Aucun;Membre archive;204;;;;Cas nominal
+ERR-034;Archivage;MEMBERS > CRUD METIER;PROVINCIAL;PATCH;/members/{id}/archive;Membre actif dans province du PROVINCIAL;Aucun;Membre archive;204;;;;Cas nominal
+ERR-035;Archivage;MEMBERS > CRUD METIER;ADMIN;PATCH;/members/{id}/archive;Membre actif existant;Aucun;Membre archive;204;;;;Cas nominal
+ERR-036;Archivage;MEMBERS > CRUD METIER;BERGER;GET;/members/{id};Membre deja ARCHIVED;id archived;Membre invisible endpoint standard;404;;;;
+ERR-037;Archivage;MEMBERS > CRUD METIER;REGIONAL;GET;/members/{id};Membre deja ARCHIVED;id archived;Membre invisible endpoint standard;404;;;;
+ERR-038;Archivage;MEMBERS > CRUD METIER;PROVINCIAL;GET;/members/{id};Membre deja ARCHIVED;id archived;Membre invisible endpoint standard;404;;;;
+ERR-039;Archivage;MEMBERS > CRUD METIER;ADMIN;GET;/members/{id};Membre deja ARCHIVED;id archived;Membre invisible endpoint standard;404;;;;Admin doit utiliser /members/archived
+ERR-040;Archivage;MEMBERS > CRUD METIER;BERGER;PUT;/members/update/{id};Membre deja ARCHIVED;CmdaMemberDTO valide;Modification refusee membre archive;404;;;;
+ERR-041;Archivage;MEMBERS > CRUD METIER;REGIONAL;PUT;/members/update/{id};Membre deja ARCHIVED;CmdaMemberDTO valide;Modification refusee membre archive;404;;;;
+ERR-042;Archivage;MEMBERS > CRUD METIER;PROVINCIAL;PUT;/members/update/{id};Membre deja ARCHIVED;CmdaMemberDTO valide;Modification refusee membre archive;404;;;;
+ERR-043;Archivage;MEMBERS > CRUD METIER;ADMIN;PUT;/members/update/{id};Membre deja ARCHIVED;CmdaMemberDTO avec status ACTIVE;Modification refusee membre archive;404;;;;Restauration via endpoint dedie
+ERR-044;Restauration;MEMBERS > CRUD METIER;ADMIN;PATCH;/members/{id}/restore;Membre ARCHIVED existant;status ACTIVE;Membre restaure en ACTIVE;200;;;;Cas nominal
+ERR-045;Restauration;MEMBERS > CRUD METIER;PROVINCIAL;PATCH;/members/{id}/restore;Membre ARCHIVED;status ACTIVE;Acces interdit restauration;403;;;;Admin uniquement
+ERR-046;Restauration;MEMBERS > CRUD METIER;REGIONAL;PATCH;/members/{id}/restore;Membre ARCHIVED;status ACTIVE;Acces interdit restauration;403;;;;Admin uniquement
+ERR-047;Restauration;MEMBERS > CRUD METIER;BERGER;PATCH;/members/{id}/restore;Membre ARCHIVED;status ACTIVE;Acces interdit restauration;403;;;;Admin uniquement
+ERR-048;Status;MEMBERS > CRUD METIER;BERGER;PATCH;/members/{id}/status;Membre dans fraternite du BERGER;status INACTIVE;Status modifie;200;;;;Cas nominal
+ERR-049;Status;MEMBERS > CRUD METIER;REGIONAL;PATCH;/members/{id}/status;Membre dans region du REGIONAL;status INACTIVE;Status modifie;200;;;;Cas nominal
+ERR-050;Status;MEMBERS > CRUD METIER;PROVINCIAL;PATCH;/members/{id}/status;Membre dans province du PROVINCIAL;status INACTIVE;Status modifie;200;;;;Cas nominal
+ERR-051;Status;MEMBERS > CRUD METIER;ADMIN;PATCH;/members/{id}/status;Membre existant;status INACTIVE;Status modifie;200;;;;Cas nominal
+ERR-052;Status;MEMBERS > CRUD METIER;ADMIN;PATCH;/members/{id}/status;Membre existant;status ARCHIVED;Requete invalide utiliser archive endpoint;400;;;;
+ERR-053;Status;MEMBERS > CRUD METIER;ADMIN;PATCH;/members/{id}/status;Membre existant;status UNKNOWN;Requete invalide statut inconnu;400;;;;
+ERR-054;Parametre invalide;MEMBERS > CRUD METIER;ADMIN;GET;/members/abc;Token ADMIN valide;id non numerique;Parametre invalide;400;;;;
+ERR-055;Parametre invalide;MEMBERS > CRUD METIER;BERGER;GET;/members/abc;Token BERGER valide;id non numerique;Parametre invalide;400;;;;
+ERR-056;Parametre invalide;MEMBERS > SEARCH & FILTER;ADMIN;GET;/members/search?fraternityId=abc;Token ADMIN valide;fraternityId non numerique;Parametre invalide;400;;;;
+ERR-057;Parametre invalide;MEMBERS > SEARCH & FILTER;ADMIN;GET;/members/search?regionId=abc;Token ADMIN valide;regionId non numerique;Parametre invalide;400;;;;
+ERR-058;Parametre invalide;MEMBERS > SEARCH & FILTER;ADMIN;GET;/members/search?provinceId=abc;Token ADMIN valide;provinceId non numerique;Parametre invalide;400;;;;
+ERR-059;Recherche perimetree;MEMBERS > SEARCH & FILTER;BERGER;GET;/members/search?fraternityId={autreFraternityId};Autre fraternite existante;fraternityId hors perimetre;Liste vide ou 404 selon implementation;200;;;;Verifier politique retenue sur filtres hors perimetre
+ERR-060;Recherche perimetree;MEMBERS > SEARCH & FILTER;REGIONAL;GET;/members/search?regionId={autreRegionId};Autre region existante;regionId hors perimetre;Liste vide ou 404 selon implementation;200;;;;Verifier politique retenue sur filtres hors perimetre
+ERR-061;Recherche perimetree;MEMBERS > SEARCH & FILTER;PROVINCIAL;GET;/members/search?provinceId={autreProvinceId};Autre province existante;provinceId hors perimetre;Liste vide ou 404 selon implementation;200;;;;Verifier politique retenue sur filtres hors perimetre
+ERR-062;Export perimetre;MEMBERS > EXPORT;BERGER;GET;/members/export/csv?fraternityId={autreFraternityId};Autre fraternite existante;fraternityId hors perimetre;Export vide ou 404 selon implementation;200;;;;Verifier politique retenue sur export filtre hors perimetre
+ERR-063;Export perimetre;MEMBERS > EXPORT;REGIONAL;GET;/members/export/csv?fraternityId={fraternityHorsRegion};Fraternite hors region;fraternityId hors perimetre;Export vide ou 404 selon implementation;200;;;;
+ERR-064;Export perimetre;MEMBERS > EXPORT;PROVINCIAL;GET;/members/export/csv?regionId={regionHorsProvince};Region hors province;regionId hors perimetre;Export vide ou 404 selon implementation;200;;;;
+ERR-065;Export format;MEMBERS > EXPORT;BERGER;GET;/members/export/csv;Token BERGER valide;Aucun;CSV retourne avec membres du perimetre uniquement;200;;;;Cas nominal
+ERR-066;Export format;MEMBERS > EXPORT;REGIONAL;GET;/members/export/excel;Token REGIONAL valide;Aucun;Excel retourne avec membres du perimetre uniquement;200;;;;Cas nominal
+ERR-067;Export format;MEMBERS > EXPORT;PROVINCIAL;GET;/members/export/pdf;Token PROVINCIAL valide;Aucun;PDF retourne avec membres du perimetre uniquement;200;;;;Cas nominal
+ERR-068;Administration members;MEMBERS > ADMINISTRATION METIER;ADMIN;GET;/members/all;Token ADMIN valide;Aucun;Tous les membres tous statuts;200;;;;Cas nominal
+ERR-069;Administration members;MEMBERS > ADMINISTRATION METIER;ADMIN;GET;/members/archived;Token ADMIN valide;Aucun;Membres ARCHIVED uniquement;200;;;;Cas nominal
+ERR-070;Administration members;MEMBERS > ADMINISTRATION METIER;ADMIN;GET;/members/inactive;Token ADMIN valide;Aucun;Membres INACTIVE uniquement;200;;;;Cas nominal
+ERR-071;Administration members;MEMBERS > ADMINISTRATION METIER;BERGER;GET;/members/archived;Token BERGER valide;Aucun;Acces interdit;403;;;;
+ERR-072;Administration members;MEMBERS > ADMINISTRATION METIER;REGIONAL;GET;/members/inactive;Token REGIONAL valide;Aucun;Acces interdit;403;;;;
+ERR-073;Province;PROVINCES;ADMIN;POST;/provinces/create;Token ADMIN valide;name et description presents;Province creee;201;;;;Cas nominal
+ERR-074;Province;PROVINCES;PROVINCIAL;POST;/provinces/create;Token PROVINCIAL valide;name et description presents;Acces interdit;403;;;;
+ERR-075;Province;PROVINCES;ADMIN;PUT;/provinces/update/{id};Province inexistante;ProvinceDTO valide;Province introuvable;404;;;;
+ERR-076;Region;REGIONS;ADMIN;POST;/regions/create;Token ADMIN valide;provinceId absent;Requete invalide province obligatoire;400;;;;Cas corrige
+ERR-077;Region;REGIONS;ADMIN;POST;/regions/create;Token ADMIN valide;provinceId inexistant;Province introuvable;404;;;;
+ERR-078;Region;REGIONS;ADMIN;POST;/regions/create;Token ADMIN valide;provinceId valide;Region creee;201;;;;Cas nominal
+ERR-079;Region;REGIONS;ADMIN;PUT;/regions/update/{id};Region existante;provinceId absent;Requete invalide province obligatoire;400;;;;
+ERR-080;Region;REGIONS;ADMIN;PUT;/regions/update/{id};Region inexistante;provinceId valide;Region introuvable;404;;;;
+ERR-081;Fraternity;FRATERNITIES;ADMIN;POST;/fraternities/create;Token ADMIN valide;regionId absent;Requete invalide region obligatoire;400;;;;A verifier/corriger si 500
+ERR-082;Fraternity;FRATERNITIES;ADMIN;POST;/fraternities/create;Token ADMIN valide;regionId inexistant;Region introuvable;404;;;;
+ERR-083;Fraternity;FRATERNITIES;ADMIN;POST;/fraternities/create;Token ADMIN valide;regionId valide;Fraternity creee;201;;;;Cas nominal
+ERR-084;Fraternity;FRATERNITIES;ADMIN;PUT;/fraternities/update/{id};Fraternity existante;regionId absent;Requete invalide region obligatoire;400;;;;A verifier/corriger si 500
+ERR-085;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;PROVINCIAL sans provinceId;Requete invalide province obligatoire;400;;;;
+ERR-086;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;REGIONAL sans regionId;Requete invalide region obligatoire;400;;;;
+ERR-087;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;BERGER sans fraternityId;Requete invalide fraternity obligatoire;400;;;;
+ERR-088;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;role invalide;Requete invalide role inconnu;400;;;;
+ERR-089;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;username absent;Requete invalide username obligatoire;400;;;;
+ERR-090;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;PROVINCIAL avec provinceId inexistant;Province introuvable;404;;;;
+ERR-091;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;REGIONAL avec regionId inexistant;Region introuvable;404;;;;
+ERR-092;Users;USERS;ADMIN;POST;/api/users;Token ADMIN valide;BERGER avec fraternityId inexistant;Fraternity introuvable;404;;;;
+ERR-093;Users;USERS;ADMIN;PUT;/api/users/{id};User inexistant;UserCreationDTO valide;Utilisateur introuvable;404;;;;
+ERR-094;Users;USERS;ADMIN;PUT;/api/users/{id};User existant;REGIONAL sans regionId;Requete invalide region obligatoire;400;;;;
+ERR-095;Donnees;MEMBERS > CRUD METIER;ADMIN;POST;/members/create;Token ADMIN valide;email deja existant si contrainte DB;Conflit donnees;409;;;;Seulement si contrainte unique existe
+ERR-096;Donnees;USERS;ADMIN;POST;/api/users;Token ADMIN valide;username deja existant si contrainte DB;Conflit donnees;409;;;;Seulement si contrainte unique existe
