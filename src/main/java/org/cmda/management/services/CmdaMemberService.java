@@ -75,6 +75,28 @@ public class CmdaMemberService {
         return memberDTOs;
     }
 
+    /*
+     * ADMINISTRATION METIER
+     * Retourne tous les membres, tous statuts confondus.
+     * Reserve a ADMIN via le controller.
+     */
+    public List<CmdaMemberDTO> getAllMembersForAdministration() {
+        List<CmdaMember> members = cmdaMemberRepository.findAll();
+
+        List<CmdaMemberDTO> memberDTOs = new ArrayList<>();
+
+        for (CmdaMember member : members) {
+            memberDTOs.add(convertToDTO(member));
+        }
+
+        return memberDTOs;
+    }
+
+
+
+
+
+
     // Lire les membres avec leur fraternité
     public List<CmdaMemberWithFraternityDTO> getAllMembersWithFraternity() {
         List<CmdaMember> members = cmdaMemberRepository.findAll();
@@ -596,6 +618,137 @@ public class CmdaMemberService {
                 throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
         }
     }
+
+
+
+
+    /*
+     * MISE A JOUR
+     * Recherche securisee des membres selon le perimetre
+     * de l'utilisateur connecte.
+     *
+     * Les filtres envoyes par le frontend ne peuvent jamais elargir
+     * le perimetre metier de l'utilisateur connecte.
+     */
+    public Page<CmdaMemberDTO> searchMembers(
+            Long fraternityId,
+            Long regionId,
+            Long provinceId,
+            String firstName,
+            String lastName,
+            String profession,
+            String status,
+            Pageable pageable
+    ) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        Specification<CmdaMember> spec = (root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+
+            // Exclure les membres archives par defaut
+            predicates.add(criteriaBuilder.notEqual(root.get("status"), MemberStatus.ARCHIVED));
+
+            // Perimetre metier impose par le backend
+            switch (currentUser.getRole()) {
+                case ADMIN:
+                    break;
+
+                case PROVINCIAL:
+                    if (currentUser.getProvince() == null) {
+                        throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("region").get("province").get("id"),
+                            currentUser.getProvince().getId()
+                    ));
+                    break;
+
+                case REGIONAL:
+                    if (currentUser.getRegion() == null) {
+                        throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("region").get("id"),
+                            currentUser.getRegion().getId()
+                    ));
+                    break;
+
+                case BERGER:
+                    if (currentUser.getFraternity() == null) {
+                        throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+                    }
+                    predicates.add(criteriaBuilder.equal(
+                            root.get("fraternity").get("id"),
+                            currentUser.getFraternity().getId()
+                    ));
+                    break;
+
+                default:
+                    throw new IllegalStateException("Role utilisateur non pris en charge: " + currentUser.getRole());
+            }
+
+            // Filtres hierarchiques optionnels
+            if (provinceId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("fraternity").get("region").get("province").get("id"),
+                        provinceId
+                ));
+            }
+
+            if (regionId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("fraternity").get("region").get("id"),
+                        regionId
+                ));
+            }
+
+            if (fraternityId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("fraternity").get("id"),
+                        fraternityId
+                ));
+            }
+
+            // Filtres simples optionnels
+            if (firstName != null && !firstName.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("firstName")),
+                        "%" + firstName.toLowerCase() + "%"
+                ));
+            }
+
+            if (lastName != null && !lastName.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("lastName")),
+                        "%" + lastName.toLowerCase() + "%"
+                ));
+            }
+
+            if (profession != null && !profession.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("profession")),
+                        "%" + profession.toLowerCase() + "%"
+                ));
+            }
+
+            if (status != null && !status.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("status"),
+                        MemberStatus.valueOf(status.toUpperCase())
+                ));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return cmdaMemberRepository.findAll(spec, pageable)
+                .map(this::convertToDTO);
+    }
+
+
+
+
+
 
 
 

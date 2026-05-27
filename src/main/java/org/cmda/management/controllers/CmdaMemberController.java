@@ -10,6 +10,8 @@ import org.cmda.management.dtos.CmdaMemberWithFraternityDTO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+// import PreAuthorize
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,12 +70,19 @@ public class CmdaMemberController {
 
 
 
-    // Endpoint pour récupérer les membres avec leur fraternité
+    /*
+     * ADMINISTRATION METIER
+     * Retourne tous les membres pour l'administration.
+     * Reserve a ADMIN.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<List<CmdaMemberWithFraternityDTO>> getAllMembers() {
-        List<CmdaMemberWithFraternityDTO> members = cmdaMemberService.getAllMembersWithFraternity();
+    public ResponseEntity<List<CmdaMemberDTO>> getAllMembersForAdministration() {
+        List<CmdaMemberDTO> members = cmdaMemberService.getAllMembersForAdministration();
         return ResponseEntity.ok(members);
     }
+
+
 
 
     /*
@@ -103,6 +112,44 @@ public class CmdaMemberController {
         List<CmdaMemberDTO> members = cmdaMemberService.getFirst10Members();
         return new ResponseEntity<>(members, HttpStatus.OK);
     }
+
+
+    /*
+     * MISE A JOUR
+     * Recherche securisee des membres selon le perimetre
+     * de l'utilisateur connecte.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Page<CmdaMemberDTO>> searchMembersForCurrentUser(
+            @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long provinceId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String profession,
+            @RequestParam(required = false) String status,
+            Pageable pageable
+    ) {
+        Page<CmdaMemberDTO> members = cmdaMemberService.searchMembers(
+                fraternityId,
+                regionId,
+                provinceId,
+                firstName,
+                lastName,
+                profession,
+                status,
+                pageable
+        );
+
+        return ResponseEntity.ok(members);
+    }
+
+
+
+
+
+
+
 
     // Endpoint pour récupérer un membre par son ID
     @GetMapping("/{id}")
