@@ -332,6 +332,25 @@ public class CmdaMemberService {
 
 
 
+    /*
+     * ADMINISTRATION METIER
+     * Retourne uniquement les membres inactifs.
+     * Reserve a ADMIN via le controller.
+     */
+    public List<CmdaMemberDTO> getInactiveMembersForAdministration() {
+        List<CmdaMember> members = cmdaMemberRepository.findAll();
+
+        List<CmdaMemberDTO> memberDTOs = new ArrayList<>();
+
+        for (CmdaMember member : members) {
+            if (member.getStatus() == MemberStatus.INACTIVE) {
+                memberDTOs.add(convertToDTO(member));
+            }
+        }
+
+        return memberDTOs;
+    }
+
 
 
 
@@ -770,6 +789,37 @@ public class CmdaMemberService {
 
 
 
+
+    /*
+     * CRUD METIER
+     * Met a jour uniquement le statut d'un membre.
+     *
+     * Regles :
+     * - le membre doit appartenir au perimetre de l'utilisateur connecte
+     * - un membre ARCHIVED ne peut pas etre modifie ici
+     * - cette route autorise uniquement ACTIVE et INACTIVE
+     * - ARCHIVED est gere par archive/restore
+     */
+    public CmdaMemberDTO updateMemberStatus(Long id, String status) {
+        User currentUser = currentUserService.getCurrentUser();
+
+        CmdaMember cmdaMember = findMemberInCurrentUserScope(id, currentUser);
+
+        if (cmdaMember.getStatus() == MemberStatus.ARCHIVED) {
+            throw notFound("Member not found");
+        }
+
+        MemberStatus newStatus = MemberStatus.valueOf(status.toUpperCase());
+
+        if (newStatus == MemberStatus.ARCHIVED) {
+            throw new IllegalArgumentException("Use archive endpoint to archive a member.");
+        }
+
+        cmdaMember.setStatus(newStatus);
+
+        CmdaMember savedMember = cmdaMemberRepository.save(cmdaMember);
+        return convertToDTO(savedMember);
+    }
 
 
 

@@ -164,6 +164,36 @@ public class CmdaMemberController {
 
 
 
+    /*
+     * ADMINISTRATION METIER
+     * Retourne les membres inactifs.
+     * Reserve a ADMIN.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/inactive")
+    public ResponseEntity<List<CmdaMemberDTO>> getInactiveMembers() {
+        List<CmdaMemberDTO> members = cmdaMemberService.getInactiveMembersForAdministration();
+        return ResponseEntity.ok(members);
+    }
+
+
+
+
+    /*
+     * CRUD METIER
+     * Met a jour uniquement le statut d'un membre.
+     */
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<CmdaMemberDTO> updateMemberStatus(
+            @PathVariable Long id,
+            @RequestBody CmdaMemberDTO cmdaMemberDTO
+    ) {
+        CmdaMemberDTO updatedMember = cmdaMemberService.updateMemberStatus(id, cmdaMemberDTO.getStatus());
+        return ResponseEntity.ok(updatedMember);
+    }
+
+
+
 
 
 
