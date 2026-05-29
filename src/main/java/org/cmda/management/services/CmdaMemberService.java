@@ -673,6 +673,7 @@ public class CmdaMemberService {
      * le perimetre metier de l'utilisateur connecte.
      */
     public Page<CmdaMemberDTO> searchMembers(
+            String keyword,
             Long fraternityId,
             Long regionId,
             Long provinceId,
@@ -752,6 +753,17 @@ public class CmdaMemberService {
             }
 
             // Filtres simples optionnels
+            if (keyword != null && !keyword.isBlank()) {
+                String normalizedKeyword = "%" + keyword.toLowerCase() + "%";
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("phoneNumber")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("profession")), normalizedKeyword)
+                ));
+            }
+
             if (firstName != null && !firstName.isEmpty()) {
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("firstName")),

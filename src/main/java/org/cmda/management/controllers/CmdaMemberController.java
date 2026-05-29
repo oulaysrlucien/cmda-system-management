@@ -121,6 +121,7 @@ public class CmdaMemberController {
      */
     @GetMapping("/search")
     public ResponseEntity<Page<CmdaMemberDTO>> searchMembersForCurrentUser(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long fraternityId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long provinceId,
@@ -131,6 +132,7 @@ public class CmdaMemberController {
             Pageable pageable
     ) {
         Page<CmdaMemberDTO> members = cmdaMemberService.searchMembers(
+                keyword,
                 fraternityId,
                 regionId,
                 provinceId,
