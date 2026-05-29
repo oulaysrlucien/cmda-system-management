@@ -1,6 +1,7 @@
 package org.cmda.management.services;
 
 import org.cmda.management.dtos.CurrentUserScopeDTO;
+import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.dtos.RegionDTO;
 import org.cmda.management.entities.Fraternity;
 import org.cmda.management.entities.Province;
@@ -25,6 +26,7 @@ public class CurrentUserScopeService {
     private final FraternityRepository fraternityRepository;
     private final CmdaMemberRepository cmdaMemberRepository;
     private final RegionService regionService;
+    private final FraternityService fraternityService;
 
     public CurrentUserScopeService(
             CurrentUserService currentUserService,
@@ -32,7 +34,8 @@ public class CurrentUserScopeService {
             RegionRepository regionRepository,
             FraternityRepository fraternityRepository,
             CmdaMemberRepository cmdaMemberRepository,
-            RegionService regionService
+            RegionService regionService,
+            FraternityService fraternityService
     ) {
         this.currentUserService = currentUserService;
         this.provinceRepository = provinceRepository;
@@ -40,6 +43,7 @@ public class CurrentUserScopeService {
         this.fraternityRepository = fraternityRepository;
         this.cmdaMemberRepository = cmdaMemberRepository;
         this.regionService = regionService;
+        this.fraternityService = fraternityService;
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +80,47 @@ public class CurrentUserScopeService {
         return regionRepository.findByProvinceId(province.getId()).stream()
                 .map(regionService::convertToRegionDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<FraternityDTO> getCurrentRegionFraternities() {
+        User user = currentUserService.getCurrentUser();
+
+        if (user.getRole() == Role.ADMIN) {
+            return fraternityService.getAllFraternities();
+        }
+
+        Region region = requireRegion(user);
+
+        return fraternityService.getFraternitiesByRegion(region.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<FraternityDTO> getScopedRegionFraternities(Long regionId) {
+        User user = currentUserService.getCurrentUser();
+
+        if (user.getRole() == Role.ADMIN) {
+            return fraternityService.getFraternitiesByRegion(regionId);
+        }
+
+        if (user.getRole() == Role.REGIONAL) {
+            Region region = requireRegion(user);
+            if (!region.getId().equals(regionId)) {
+                throw new IllegalStateException("Cette region ne fait pas partie du perimetre regional.");
+            }
+
+            return fraternityService.getFraternitiesByRegion(regionId);
+        }
+
+        Province province = requireProvince(user);
+        Region region = regionRepository.findById(regionId)
+                .orElseThrow(() -> new IllegalStateException("Region introuvable."));
+
+        if (region.getProvince() == null || !province.getId().equals(region.getProvince().getId())) {
+            throw new IllegalStateException("Cette region ne fait pas partie de la province de l'utilisateur.");
+        }
+
+        return fraternityService.getFraternitiesByRegion(regionId);
     }
 
     private String resolveScopeLevel(Role role) {

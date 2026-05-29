@@ -1,6 +1,7 @@
 package org.cmda.management.controllers;
 
 import org.cmda.management.dtos.CurrentUserScopeDTO;
+import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.dtos.RegionDTO;
 import org.cmda.management.services.CurrentUserScopeService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,5 +29,17 @@ public class CurrentUserScopeController {
     @GetMapping("/province/regions")
     public ResponseEntity<java.util.List<RegionDTO>> getCurrentProvinceRegions() {
         return ResponseEntity.ok(currentUserScopeService.getCurrentProvinceRegions());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'REGIONAL')")
+    @GetMapping("/region/fraternities")
+    public ResponseEntity<java.util.List<FraternityDTO>> getCurrentRegionFraternities() {
+        return ResponseEntity.ok(currentUserScopeService.getCurrentRegionFraternities());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVINCIAL', 'REGIONAL')")
+    @GetMapping("/regions/{regionId}/fraternities")
+    public ResponseEntity<java.util.List<FraternityDTO>> getScopedRegionFraternities(@PathVariable Long regionId) {
+        return ResponseEntity.ok(currentUserScopeService.getScopedRegionFraternities(regionId));
     }
 }
