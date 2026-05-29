@@ -1,6 +1,7 @@
 package org.cmda.management.services;
 
 import org.cmda.management.dtos.CurrentUserScopeDTO;
+import org.cmda.management.dtos.RegionDTO;
 import org.cmda.management.entities.Fraternity;
 import org.cmda.management.entities.Province;
 import org.cmda.management.entities.Region;
@@ -23,19 +24,22 @@ public class CurrentUserScopeService {
     private final RegionRepository regionRepository;
     private final FraternityRepository fraternityRepository;
     private final CmdaMemberRepository cmdaMemberRepository;
+    private final RegionService regionService;
 
     public CurrentUserScopeService(
             CurrentUserService currentUserService,
             ProvinceRepository provinceRepository,
             RegionRepository regionRepository,
             FraternityRepository fraternityRepository,
-            CmdaMemberRepository cmdaMemberRepository
+            CmdaMemberRepository cmdaMemberRepository,
+            RegionService regionService
     ) {
         this.currentUserService = currentUserService;
         this.provinceRepository = provinceRepository;
         this.regionRepository = regionRepository;
         this.fraternityRepository = fraternityRepository;
         this.cmdaMemberRepository = cmdaMemberRepository;
+        this.regionService = regionService;
     }
 
     @Transactional(readOnly = true)
@@ -55,6 +59,23 @@ public class CurrentUserScopeService {
         scope.setMetrics(resolveMetrics(user));
 
         return scope;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RegionDTO> getCurrentProvinceRegions() {
+        User user = currentUserService.getCurrentUser();
+
+        if (user.getRole() == Role.ADMIN) {
+            return regionRepository.findAll().stream()
+                    .map(regionService::convertToRegionDTO)
+                    .toList();
+        }
+
+        Province province = requireProvince(user);
+
+        return regionRepository.findByProvinceId(province.getId()).stream()
+                .map(regionService::convertToRegionDTO)
+                .toList();
     }
 
     private String resolveScopeLevel(Role role) {
