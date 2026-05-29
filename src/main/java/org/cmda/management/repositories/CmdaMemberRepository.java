@@ -24,11 +24,17 @@ public interface CmdaMemberRepository extends JpaRepository<CmdaMember, Long>, J
 
     Page<CmdaMember> findByFraternityId(Long fraternityId, Pageable pageable);
 
+    long countByFraternityId(Long fraternityId);
+
 
     Page<CmdaMember> findByFraternityRegionId(Long regionId, Pageable pageable);
 
+    long countByFraternityRegionId(Long regionId);
+
 
     Page<CmdaMember> findByFraternityRegionProvinceId(Long provinceId, Pageable pageable);
+
+    long countByFraternityRegionProvinceId(Long provinceId);
 
 
     Page<CmdaMember> findByStatus(MemberStatus status, Pageable pageable);

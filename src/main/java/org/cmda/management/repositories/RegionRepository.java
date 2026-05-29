@@ -10,6 +10,8 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
     // Trouver toutes les régions appartenant à une province spécifique
     List<Region> findByProvinceId(Long provinceId);
 
+    long countByProvinceId(Long provinceId);
+
 
     // Trouver une région par son nom
     Optional<Region> findByName(String name);

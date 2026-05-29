@@ -11,6 +11,10 @@ public interface FraternityRepository extends JpaRepository<Fraternity, Long> {
     // Trouver toutes les fraternités appartenant à une région spécifique
     List<Fraternity> findByRegionId(Long regionId);
 
+    long countByRegionId(Long regionId);
+
+    long countByRegionProvinceId(Long provinceId);
+
     // Trouver une fraternité par son nom
     Optional<Fraternity> findByName(String name);
 
