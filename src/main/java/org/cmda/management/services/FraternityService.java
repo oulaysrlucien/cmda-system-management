@@ -48,6 +48,14 @@ public class FraternityService {
         return fraternityRepository.findById(id).map(this::convertToFraternityDTO);
     }
 
+    public Optional<FraternityDTO> getFraternityByIdAndRegion(Long id, Long regionId) {
+        return fraternityRepository.findByIdAndRegionId(id, regionId).map(this::convertToFraternityDTO);
+    }
+
+    public Optional<FraternityDTO> getFraternityByIdAndProvince(Long id, Long provinceId) {
+        return fraternityRepository.findByIdAndRegionProvinceId(id, provinceId).map(this::convertToFraternityDTO);
+    }
+
     // Mettre à jour une fraternité
     public FraternityDTO updateFraternity(Long id, FraternityDTO fraternityDTO) {
         Fraternity fraternity = fraternityRepository.findById(id)

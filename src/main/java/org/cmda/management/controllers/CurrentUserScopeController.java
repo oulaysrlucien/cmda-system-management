@@ -7,6 +7,7 @@ import org.cmda.management.services.CurrentUserScopeService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,5 +42,17 @@ public class CurrentUserScopeController {
     @GetMapping("/regions/{regionId}/fraternities")
     public ResponseEntity<java.util.List<FraternityDTO>> getScopedRegionFraternities(@PathVariable Long regionId) {
         return ResponseEntity.ok(currentUserScopeService.getScopedRegionFraternities(regionId));
+    }
+
+    @PreAuthorize("hasRole('BERGER')")
+    @GetMapping("/fraternity")
+    public ResponseEntity<FraternityDTO> getCurrentFraternity() {
+        return ResponseEntity.ok(currentUserScopeService.getCurrentFraternity());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVINCIAL', 'REGIONAL', 'BERGER')")
+    @GetMapping("/fraternities/{fraternityId}")
+    public ResponseEntity<FraternityDTO> getScopedFraternity(@PathVariable Long fraternityId) {
+        return ResponseEntity.ok(currentUserScopeService.getScopedFraternity(fraternityId));
     }
 }

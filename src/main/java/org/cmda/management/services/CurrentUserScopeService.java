@@ -123,6 +123,50 @@ public class CurrentUserScopeService {
         return fraternityService.getFraternitiesByRegion(regionId);
     }
 
+    @Transactional(readOnly = true)
+    public FraternityDTO getCurrentFraternity() {
+        User user = currentUserService.getCurrentUser();
+
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalStateException("Un administrateur doit fournir un identifiant de fraternite.");
+        }
+
+        Fraternity fraternity = requireFraternity(user);
+
+        return fraternityService.getFraternityById(fraternity.getId())
+                .orElseThrow(() -> new IllegalStateException("Fraternite introuvable."));
+    }
+
+    @Transactional(readOnly = true)
+    public FraternityDTO getScopedFraternity(Long fraternityId) {
+        User user = currentUserService.getCurrentUser();
+
+        if (user.getRole() == Role.ADMIN) {
+            return fraternityService.getFraternityById(fraternityId)
+                    .orElseThrow(() -> new IllegalStateException("Fraternite introuvable."));
+        }
+
+        if (user.getRole() == Role.PROVINCIAL) {
+            Province province = requireProvince(user);
+            return fraternityService.getFraternityByIdAndProvince(fraternityId, province.getId())
+                    .orElseThrow(() -> new IllegalStateException("Cette fraternite ne fait pas partie de la province de l'utilisateur."));
+        }
+
+        if (user.getRole() == Role.REGIONAL) {
+            Region region = requireRegion(user);
+            return fraternityService.getFraternityByIdAndRegion(fraternityId, region.getId())
+                    .orElseThrow(() -> new IllegalStateException("Cette fraternite ne fait pas partie de la region de l'utilisateur."));
+        }
+
+        Fraternity fraternity = requireFraternity(user);
+        if (!fraternity.getId().equals(fraternityId)) {
+            throw new IllegalStateException("Cette fraternite ne fait pas partie du perimetre du berger.");
+        }
+
+        return fraternityService.getFraternityById(fraternityId)
+                .orElseThrow(() -> new IllegalStateException("Fraternite introuvable."));
+    }
+
     private String resolveScopeLevel(Role role) {
         return switch (role) {
             case ADMIN -> "GLOBAL";
