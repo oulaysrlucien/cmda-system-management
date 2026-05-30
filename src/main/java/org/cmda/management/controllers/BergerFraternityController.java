@@ -37,6 +37,12 @@ public class BergerFraternityController {
         return new ResponseEntity<>(fraternities, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/archived")
+    public ResponseEntity<List<FraternityDTO>> getArchivedFraternities() {
+        return ResponseEntity.ok(fraternityService.getArchivedFraternities());
+    }
+
     // Lire une fraternité par ID
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
@@ -60,6 +66,18 @@ public class BergerFraternityController {
     public ResponseEntity<Void> deleteFraternity(@PathVariable Long id) {
         fraternityService.deleteFraternity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<FraternityDTO> archiveFraternity(@PathVariable Long id) {
+        return ResponseEntity.ok(fraternityService.archiveFraternity(id));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<FraternityDTO> restoreFraternity(@PathVariable Long id) {
+        return ResponseEntity.ok(fraternityService.restoreFraternity(id));
     }
 
     // Lire les fraternités par région

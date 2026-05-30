@@ -75,6 +75,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         Role role = Role.valueOf(userDTO.getRole().toUpperCase());
+        if (role == Role.ADMIN) {
+            throw new IllegalArgumentException("La creation d'un compte ADMIN depuis l'application est interdite pour le MVP.");
+        }
         user.setRole(role);
 
         // Gestion des entités associées en fonction du rôle
@@ -89,8 +92,7 @@ public class UserService {
                 handleBergerUser(userDTO, user);
                 break;
             case ADMIN:
-                logger.info("Admin user created without additional associations.");
-                break;
+                throw new IllegalArgumentException("La creation d'un compte ADMIN depuis l'application est interdite pour le MVP.");
             default:
                 throw new IllegalArgumentException("Invalid role specified");
         }
@@ -105,8 +107,12 @@ public class UserService {
             throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
         }
 
-        user.setProvince(provinceRepository.findById(userDTO.getProvinceId())
-                .orElseThrow(() -> new RuntimeException("Province not found")));
+        Province province = provinceRepository.findById(userDTO.getProvinceId())
+                .orElseThrow(() -> new RuntimeException("Province not found"));
+        if (province.isArchived()) {
+            throw new IllegalArgumentException("Impossible d'affecter un Provincial a une province archivee.");
+        }
+        user.setProvince(province);
     }
 
 
@@ -118,6 +124,9 @@ public class UserService {
 
         Region region = regionRepository.findById(userDTO.getRegionId())
                 .orElseThrow(() -> new RuntimeException("Region not found"));
+        if (region.isArchived() || region.getProvince().isArchived()) {
+            throw new IllegalArgumentException("Impossible d'affecter un Regional a une region archivee.");
+        }
 
         user.setRegion(region);
         user.setProvince(region.getProvince());
@@ -133,8 +142,13 @@ public class UserService {
 
         Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
                 .orElseThrow(() -> new RuntimeException("Fraternity not found"));
+        if (fraternity.isArchived() || fraternity.getRegion().isArchived()) {
+            throw new IllegalArgumentException("Impossible d'affecter un Berger a une fraternite archivee.");
+        }
 
         user.setFraternity(fraternity);
+        user.setRegion(fraternity.getRegion());
+        user.setProvince(fraternity.getRegion().getProvince());
     }
 
 
@@ -324,6 +338,9 @@ public class UserService {
         existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         Role role = Role.valueOf(userDTO.getRole().toUpperCase());
+        if (role == Role.ADMIN && existingUser.getRole() != Role.ADMIN) {
+            throw new IllegalArgumentException("La promotion vers ADMIN depuis l'application est interdite pour le MVP.");
+        }
         existingUser.setRole(role);
 
 // Nettoyer les anciens rattachements avant d'appliquer le nouveau role
@@ -337,8 +354,12 @@ public class UserService {
                     throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
                 }
 
-                existingUser.setProvince(provinceRepository.findById(userDTO.getProvinceId())
-                        .orElseThrow(() -> new RuntimeException("Province not found")));
+                Province province = provinceRepository.findById(userDTO.getProvinceId())
+                        .orElseThrow(() -> new RuntimeException("Province not found"));
+                if (province.isArchived()) {
+                    throw new IllegalArgumentException("Impossible d'affecter un Provincial a une province archivee.");
+                }
+                existingUser.setProvince(province);
                 break;
 
             case REGIONAL:
@@ -348,6 +369,9 @@ public class UserService {
 
                 Region region = regionRepository.findById(userDTO.getRegionId())
                         .orElseThrow(() -> new RuntimeException("Region not found"));
+                if (region.isArchived() || region.getProvince().isArchived()) {
+                    throw new IllegalArgumentException("Impossible d'affecter un Regional a une region archivee.");
+                }
 
                 existingUser.setRegion(region);
                 existingUser.setProvince(region.getProvince());
@@ -360,8 +384,13 @@ public class UserService {
 
                 Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
                         .orElseThrow(() -> new RuntimeException("Fraternity not found"));
+                if (fraternity.isArchived() || fraternity.getRegion().isArchived()) {
+                    throw new IllegalArgumentException("Impossible d'affecter un Berger a une fraternite archivee.");
+                }
 
                 existingUser.setFraternity(fraternity);
+                existingUser.setRegion(fraternity.getRegion());
+                existingUser.setProvince(fraternity.getRegion().getProvince());
                 break;
 
             case ADMIN:

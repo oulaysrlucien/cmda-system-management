@@ -36,6 +36,16 @@ public interface CmdaMemberRepository extends JpaRepository<CmdaMember, Long>, J
 
     long countByFraternityRegionProvinceId(Long provinceId);
 
+    long countByStatusNot(MemberStatus status);
+
+    long countByFraternityIdAndStatusNot(Long fraternityId, MemberStatus status);
+
+    long countByFraternityRegionIdAndStatusNot(Long regionId, MemberStatus status);
+
+    long countByFraternityRegionProvinceIdAndStatusNot(Long provinceId, MemberStatus status);
+
+    boolean existsByFraternityIdAndStatusNot(Long fraternityId, MemberStatus status);
+
 
     Page<CmdaMember> findByStatus(MemberStatus status, Pageable pageable);
 

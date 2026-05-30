@@ -9,6 +9,7 @@ public class ProvinceDTO {
     private Long id;
     private String name;
     private String description;
+    private boolean archived;
     private List<RegionDTO> regions;  // Simplifier en utilisant un autre DTO pour éviter la récursion infinie
 
     // Getters et setters
@@ -34,6 +35,14 @@ public class ProvinceDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public List<RegionDTO> getRegions() {

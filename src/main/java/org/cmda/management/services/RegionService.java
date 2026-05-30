@@ -1,75 +1,139 @@
 package org.cmda.management.services;
 
-import org.cmda.management.entities.Region;
-import org.cmda.management.entities.Province;
-import org.cmda.management.repositories.RegionRepository;
-import org.cmda.management.repositories.ProvinceRepository;
-import org.cmda.management.dtos.RegionDTO;
-import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.dtos.CmdaMemberDTO;
-import org.cmda.management.entities.Fraternity;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cmda.management.dtos.FraternityDTO;
+import org.cmda.management.dtos.RegionDTO;
+import org.cmda.management.entities.Region;
+import org.cmda.management.repositories.FraternityRepository;
+import org.cmda.management.repositories.ProvinceRepository;
+import org.cmda.management.repositories.RegionRepository;
+import org.cmda.management.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class RegionService {
 
-    @Autowired
-    private RegionRepository regionRepository;
+    private final RegionRepository regionRepository;
+    private final ProvinceRepository provinceRepository;
+    private final FraternityRepository fraternityRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ProvinceRepository provinceRepository;
-
-    // Créer une région
-    public RegionDTO createRegion(RegionDTO regionDTO) {
-        Region region = new Region();
-        region.setName(regionDTO.getName());
-        region.setDescription(regionDTO.getDescription());
-
-        if (regionDTO.getProvinceId() == null) {
-            throw new IllegalArgumentException("Une region doit etre rattachee a une province existante.");
-        }
-
-        Province province = provinceRepository.findById(regionDTO.getProvinceId())
-                .orElseThrow(() -> new RuntimeException("Province not found"));
-        region.setProvince(province);
-
-        Region savedRegion = regionRepository.save(region);
-
-        RegionDTO createdRegionDTO = new RegionDTO();
-        createdRegionDTO.setId(savedRegion.getId());
-        createdRegionDTO.setName(savedRegion.getName());
-        createdRegionDTO.setDescription(savedRegion.getDescription());
-        createdRegionDTO.setProvinceId(savedRegion.getProvince().getId());
-
-        return createdRegionDTO;
+    public RegionService(
+            RegionRepository regionRepository,
+            ProvinceRepository provinceRepository,
+            FraternityRepository fraternityRepository,
+            UserRepository userRepository
+    ) {
+        this.regionRepository = regionRepository;
+        this.provinceRepository = provinceRepository;
+        this.fraternityRepository = fraternityRepository;
+        this.userRepository = userRepository;
     }
 
-    // Convertir une région en RegionDTO en incluant les fraternities et leurs members
-    public RegionDTO convertToRegionDTO(Region region) {
-        RegionDTO regionDTO = new RegionDTO();
-        regionDTO.setId(region.getId());
-        regionDTO.setName(region.getName());
-        regionDTO.setDescription(region.getDescription());
-        regionDTO.setProvinceId(region.getProvince().getId());
+    public RegionDTO createRegion(RegionDTO dto) {
+        var province = requireActiveProvince(dto.getProvinceId());
+        String name = normalizeName(dto.getName());
+        if (regionRepository.existsByProvinceIdAndNameIgnoreCase(province.getId(), name)) {
+            throw new IllegalArgumentException("Une region portant ce nom existe deja dans cette province.");
+        }
+        Region region = new Region();
+        region.setName(name);
+        region.setDescription(dto.getDescription());
+        region.setProvince(province);
+        region.setArchived(false);
+        region.setArchivedAt(null);
+        return convertToDTO(regionRepository.save(region));
+    }
 
-        // Convertir les fraternities associées avec leurs membres
-        List<FraternityDTO> fraternityDTOs = region.getFraternities()
-                .stream()
+    public List<RegionDTO> getAllRegions() {
+        return regionRepository.findByArchivedFalse().stream().map(this::convertToRegionDTO).toList();
+    }
+
+    public List<RegionDTO> getArchivedRegions() {
+        return regionRepository.findByArchivedTrue().stream().map(this::convertToRegionDTO).toList();
+    }
+
+    public Optional<Region> getRegionById(Long id) {
+        return regionRepository.findById(id).filter(region -> !region.isArchived());
+    }
+
+    public RegionDTO updateRegion(Long id, RegionDTO dto) {
+        Region region = getRegion(id);
+        if (region.isArchived()) {
+            throw new IllegalStateException("Une region archivee doit etre reactivee avant modification.");
+        }
+        if (dto.getProvinceId() == null || !dto.getProvinceId().equals(region.getProvince().getId())) {
+            throw new IllegalArgumentException("Le deplacement d'une region vers une autre province est interdit pour le MVP.");
+        }
+        String name = normalizeName(dto.getName());
+        if (regionRepository.existsByProvinceIdAndNameIgnoreCaseAndIdNot(region.getProvince().getId(), name, id)) {
+            throw new IllegalArgumentException("Une region portant ce nom existe deja dans cette province.");
+        }
+        region.setName(name);
+        region.setDescription(dto.getDescription());
+        return convertToRegionDTO(regionRepository.save(region));
+    }
+
+    @Transactional
+    public RegionDTO archiveRegion(Long id) {
+        Region region = getRegion(id);
+        if (region.isArchived()) {
+            throw new IllegalStateException("Cette region est deja archivee.");
+        }
+        if (fraternityRepository.existsByRegionIdAndArchivedFalse(id)) {
+            throw new IllegalStateException("Impossible d'archiver cette region tant qu'elle contient des fraternites actives.");
+        }
+        region.setArchived(true);
+        region.setArchivedAt(LocalDateTime.now());
+        var users = userRepository.findByRegionId(id);
+        users.forEach(user -> {
+            user.setRegion(null);
+            user.setProvince(null);
+        });
+        userRepository.saveAll(users);
+        return convertToRegionDTO(regionRepository.save(region));
+    }
+
+    public RegionDTO restoreRegion(Long id) {
+        Region region = getRegion(id);
+        if (!region.isArchived()) {
+            throw new IllegalStateException("Cette region est deja active.");
+        }
+        if (region.getProvince() == null || region.getProvince().isArchived()) {
+            throw new IllegalStateException("La province parente doit etre active avant de reactiver cette region.");
+        }
+        region.setArchived(false);
+        region.setArchivedAt(null);
+        return convertToRegionDTO(regionRepository.save(region));
+    }
+
+    public void deleteRegion(Long id) {
+        throw new IllegalStateException("La suppression physique des regions est interdite. Utilisez l'archivage logique.");
+    }
+
+    public List<Region> getRegionsByProvince(Long provinceId) {
+        requireActiveProvince(provinceId);
+        return regionRepository.findByProvinceIdAndArchivedFalse(provinceId);
+    }
+
+    public RegionDTO convertToRegionDTO(Region region) {
+        RegionDTO dto = convertToDTO(region);
+        dto.setFraternities(region.getFraternities() == null ? List.of() : region.getFraternities().stream()
+                .filter(fraternity -> !fraternity.isArchived())
                 .map(fraternity -> {
                     FraternityDTO fraternityDTO = new FraternityDTO();
                     fraternityDTO.setId(fraternity.getId());
                     fraternityDTO.setName(fraternity.getName());
                     fraternityDTO.setDescription(fraternity.getDescription());
+                    fraternityDTO.setArchived(fraternity.isArchived());
                     fraternityDTO.setRegionId(fraternity.getRegion().getId());
-
-                    // Convertir les members associés
-                    List<CmdaMemberDTO> memberDTOs = fraternity.getCmdaMembers() != null ?
-                            fraternity.getCmdaMembers().stream().map(member -> {
+                    fraternityDTO.setMembers(fraternity.getCmdaMembers() == null ? List.of() : fraternity.getCmdaMembers().stream()
+                            .map(member -> {
                                 CmdaMemberDTO memberDTO = new CmdaMemberDTO();
                                 memberDTO.setId(member.getId());
                                 memberDTO.setFirstName(member.getFirstName());
@@ -81,97 +145,45 @@ public class RegionService {
                                 memberDTO.setStatus(member.getStatus().name());
                                 memberDTO.setFraternityId(fraternity.getId());
                                 return memberDTO;
-                            }).collect(Collectors.toList()) : List.of();
-
-                    fraternityDTO.setMembers(memberDTOs);
+                            })
+                            .toList());
                     return fraternityDTO;
                 })
-                .collect(Collectors.toList());
-
-        regionDTO.setFraternities(fraternityDTOs);
-        return regionDTO;
+                .toList());
+        return dto;
     }
 
-    // Récupérer toutes les régions avec leurs fraternities et members sous forme de DTO
-    public List<RegionDTO> getAllRegions() {
-        List<Region> regions = regionRepository.findAll();
-        return regions.stream().map(this::convertToRegionDTO).collect(Collectors.toList());
-    }
-
-    // Lire une région par ID
-    public Optional<Region> getRegionById(Long id) {
-        return regionRepository.findById(id);
-    }
-
-    // Mettre à jour une région
-    /*
-    public Region updateRegion(Long id, Region regionDetails) {
-        Region region = regionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Region not found"));
-        region.setName(regionDetails.getName());
-        region.setDescription(regionDetails.getDescription());
-
-        Province province = provinceRepository.findById(regionDetails.getProvince().getId())
-                .orElseThrow(() -> new RuntimeException("Province not found"));
-        region.setProvince(province);
-
-        return regionRepository.save(region);
-    }
-    */
-    public RegionDTO updateRegion(Long id, RegionDTO regionDTO) {
-        // Récupérer la région par son ID
-        Region region = regionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Region not found"));
-
-        if (regionDTO.getProvinceId() == null) {
-            throw new IllegalArgumentException("Une region doit etre rattachee a une province existante.");
-        }
-
-        // Vérifier et mettre à jour la province associée
-        Province province = provinceRepository.findById(regionDTO.getProvinceId())
-                .orElseThrow(() -> new RuntimeException("Province not found"));
-
-        // Mettre à jour les propriétés de la région
-        region.setName(regionDTO.getName());
-        region.setDescription(regionDTO.getDescription());
-        region.setProvince(province);  // Mettre à jour la province associée
-
-        // Sauvegarder la région mise à jour
-        Region updatedRegion = regionRepository.save(region);
-
-        // Convertir et renvoyer la région mise à jour sous forme de DTO complet avec fraternities et members
-        return convertToRegionDTO(updatedRegion);
-    }
-
-
-
-
-
-
-    // Supprimer une région
-    public void deleteRegion(Long id) {
-        Region region = regionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Region not found"));
-        regionRepository.delete(region);
-    }
-
-    // Lire les régions par province
-    public List<Region> getRegionsByProvince(Long provinceId) {
-        return regionRepository.findByProvinceId(provinceId);
-    }
-
-
-
-    // Méthode pour convertir une entité Region en DTO
     public RegionDTO convertToDTO(Region region) {
         RegionDTO dto = new RegionDTO();
         dto.setId(region.getId());
         dto.setName(region.getName());
         dto.setDescription(region.getDescription());
+        dto.setArchived(region.isArchived());
         dto.setProvinceId(region.getProvince().getId());
         return dto;
     }
 
+    private Region getRegion(Long id) {
+        return regionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Region not found"));
+    }
 
+    private org.cmda.management.entities.Province requireActiveProvince(Long provinceId) {
+        if (provinceId == null) {
+            throw new IllegalArgumentException("Une region doit etre rattachee a une province existante.");
+        }
+        var province = provinceRepository.findById(provinceId)
+                .orElseThrow(() -> new RuntimeException("Province not found"));
+        if (province.isArchived()) {
+            throw new IllegalStateException("Impossible d'utiliser une province archivee.");
+        }
+        return province;
+    }
 
+    private String normalizeName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom de la region est requis.");
+        }
+        return name.trim().replaceAll("\\s+", " ");
+    }
 }

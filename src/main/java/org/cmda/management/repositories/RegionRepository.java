@@ -12,6 +12,22 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     long countByProvinceId(Long provinceId);
 
+    List<Region> findByArchivedFalse();
+
+    List<Region> findByArchivedTrue();
+
+    List<Region> findByProvinceIdAndArchivedFalse(Long provinceId);
+
+    long countByArchivedFalse();
+
+    long countByProvinceIdAndArchivedFalse(Long provinceId);
+
+    boolean existsByProvinceIdAndArchivedFalse(Long provinceId);
+
+    boolean existsByProvinceIdAndNameIgnoreCase(Long provinceId, String name);
+
+    boolean existsByProvinceIdAndNameIgnoreCaseAndIdNot(Long provinceId, String name, Long id);
+
 
     // Trouver une région par son nom
     Optional<Region> findByName(String name);

@@ -19,6 +19,12 @@ public interface UserRepository extends JpaRepository<User, Long>{
     // Trouver tous les utilisateurs dont le nom d'utilisateur contient une certaine chaîne de caractères
     List<User> findByUsernameContaining(String keyword);
 
+    List<User> findByProvinceId(Long provinceId);
+
+    List<User> findByRegionId(Long regionId);
+
+    List<User> findByFraternityId(Long fraternityId);
+
 
     // Trouver tous les utilisateurs actifs ayant un rôle spécifique
 

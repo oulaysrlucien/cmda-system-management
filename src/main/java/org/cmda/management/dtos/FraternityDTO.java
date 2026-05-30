@@ -8,6 +8,7 @@ public class FraternityDTO {
     private Long id;
     private String name;
     private String description;
+    private boolean archived;
     private Long regionId;
 
     // Utiliser CmdaMemberDTO pour lister les membres
@@ -36,6 +37,14 @@ public class FraternityDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
 

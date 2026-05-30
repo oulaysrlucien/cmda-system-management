@@ -41,6 +41,12 @@ public class RegionalController {
         return new ResponseEntity<>(regions, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/archived")
+    public ResponseEntity<List<RegionDTO>> getArchivedRegions() {
+        return ResponseEntity.ok(regionService.getArchivedRegions());
+    }
+
     // Lire une région par ID
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
@@ -68,6 +74,18 @@ public class RegionalController {
     public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
         regionService.deleteRegion(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<RegionDTO> archiveRegion(@PathVariable Long id) {
+        return ResponseEntity.ok(regionService.archiveRegion(id));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<RegionDTO> restoreRegion(@PathVariable Long id) {
+        return ResponseEntity.ok(regionService.restoreRegion(id));
     }
 
     // Lire les régions par province

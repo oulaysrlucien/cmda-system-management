@@ -12,4 +12,14 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
 
     // Trouver toutes les provinces contenant une certaine chaîne de caractères dans leur nom
     List<Province> findByNameContaining(String keyword);
+
+    List<Province> findByArchivedFalse();
+
+    List<Province> findByArchivedTrue();
+
+    long countByArchivedFalse();
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 }

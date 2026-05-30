@@ -2,6 +2,7 @@ package org.cmda.management.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -19,6 +20,11 @@ public class Province {
 
     @Column(nullable = true)
     private String description;
+
+    @Column(nullable = false)
+    private boolean archived = false;
+
+    private LocalDateTime archivedAt;
 
     @OneToMany(mappedBy = "province", cascade = CascadeType.ALL, orphanRemoval = true)
     //@JsonIgnoreProperties("province")  // Ignorer la relation inverse avec province pour éviter la récursivité
@@ -49,6 +55,22 @@ public class Province {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
+
+    public LocalDateTime getArchivedAt() {
+        return archivedAt;
+    }
+
+    public void setArchivedAt(LocalDateTime archivedAt) {
+        this.archivedAt = archivedAt;
     }
 
     public List<Region> getRegions() {

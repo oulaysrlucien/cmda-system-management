@@ -8,6 +8,7 @@ public class RegionDTO {
     private Long id;
     private String name;
     private String description;
+    private boolean archived;
     private Long provinceId;
 
     // Liste des fraternities associées (seulement les informations nécessaires)
@@ -36,6 +37,14 @@ public class RegionDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public Long getProvinceId() {

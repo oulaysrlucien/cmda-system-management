@@ -1,128 +1,177 @@
 package org.cmda.management.services;
 
-import org.cmda.management.entities.Province;
+import org.cmda.management.dtos.CmdaMemberDTO;
+import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.dtos.ProvinceDTO;
 import org.cmda.management.dtos.RegionDTO;
-import org.cmda.management.dtos.FraternityDTO;
-import org.cmda.management.dtos.CmdaMemberDTO;
-import org.cmda.management.entities.Region;
 import org.cmda.management.entities.Fraternity;
+import org.cmda.management.entities.Province;
+import org.cmda.management.entities.Region;
 import org.cmda.management.repositories.ProvinceRepository;
-import org.cmda.management.services.RegionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cmda.management.repositories.RegionRepository;
+import org.cmda.management.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProvinceService {
 
-    @Autowired
-    private ProvinceRepository provinceRepository;
+    private final ProvinceRepository provinceRepository;
+    private final RegionRepository regionRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private RegionService regionService;
+    public ProvinceService(
+            ProvinceRepository provinceRepository,
+            RegionRepository regionRepository,
+            UserRepository userRepository
+    ) {
+        this.provinceRepository = provinceRepository;
+        this.regionRepository = regionRepository;
+        this.userRepository = userRepository;
+    }
 
-    // Créer une province
     public Province createProvince(Province province) {
+        String name = normalizeName(province.getName(), "Le nom de la province est requis.");
+        if (provinceRepository.existsByNameIgnoreCase(name)) {
+            throw new IllegalArgumentException("Une province portant ce nom existe deja.");
+        }
+        province.setName(name);
+        province.setArchived(false);
+        province.setArchivedAt(null);
         return provinceRepository.save(province);
     }
 
-    // Convertir une entité Province en DTO Province avec les régions et fraternities
-    private ProvinceDTO convertToProvinceDTO(Province province) {
-        ProvinceDTO provinceDTO = new ProvinceDTO();
-        provinceDTO.setId(province.getId());
-        provinceDTO.setName(province.getName());
-        provinceDTO.setDescription(province.getDescription());
-
-        // Convertir les régions associées en DTOs et inclure les fraternities et members
-        List<RegionDTO> regionDTOs = province.getRegions().stream()
-                .map(this::convertToRegionDTO)
-                .collect(Collectors.toList());
-
-        provinceDTO.setRegions(regionDTOs);
-        return provinceDTO;
-    }
-
-    // Convertir une entité Region en DTO avec les fraternities et leurs members
-    private RegionDTO convertToRegionDTO(Region region) {
-        RegionDTO regionDTO = new RegionDTO();
-        regionDTO.setId(region.getId());
-        regionDTO.setName(region.getName());
-        regionDTO.setDescription(region.getDescription());
-        regionDTO.setProvinceId(region.getProvince().getId());
-
-        // Convertir les fraternities associées en DTOs et inclure les members
-        List<FraternityDTO> fraternityDTOs = region.getFraternities().stream()
-                .map(this::convertToFraternityDTO)
-                .collect(Collectors.toList());
-
-        regionDTO.setFraternities(fraternityDTOs);
-        return regionDTO;
-    }
-
-    // Convertir une entité Fraternity en DTO avec ses members
-    private FraternityDTO convertToFraternityDTO(Fraternity fraternity) {
-        FraternityDTO fraternityDTO = new FraternityDTO();
-        fraternityDTO.setId(fraternity.getId());
-        fraternityDTO.setName(fraternity.getName());
-        fraternityDTO.setDescription(fraternity.getDescription());
-        fraternityDTO.setRegionId(fraternity.getRegion().getId());
-
-        // Convertir les members associés en DTOs
-        List<CmdaMemberDTO> memberDTOs = fraternity.getCmdaMembers().stream()
-                .map(this::convertToMemberDTO)
-                .collect(Collectors.toList());
-
-        fraternityDTO.setMembers(memberDTOs);
-        return fraternityDTO;
-    }
-
-    // Convertir une entité CmdaMember en DTO
-    private CmdaMemberDTO convertToMemberDTO(org.cmda.management.entities.CmdaMember member) {
-        CmdaMemberDTO memberDTO = new CmdaMemberDTO();
-        memberDTO.setId(member.getId());
-        memberDTO.setFirstName(member.getFirstName());
-        memberDTO.setLastName(member.getLastName());
-        memberDTO.setEmail(member.getEmail());
-        memberDTO.setPhoneNumber(member.getPhoneNumber());
-        memberDTO.setBirthday(member.getBirthday());
-        memberDTO.setProfession(member.getProfession());
-        memberDTO.setStatus(member.getStatus().name());
-        memberDTO.setFraternityId(member.getFraternity().getId());
-        return memberDTO;
-    }
-
-    // Lire toutes les provinces avec leurs régions, fraternities, et members
     public List<ProvinceDTO> getAllProvinces() {
-        List<Province> provinces = provinceRepository.findAll();
-        return provinces.stream()
+        return provinceRepository.findByArchivedFalse().stream()
                 .map(this::convertToProvinceDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    // Lire une province par ID avec ses régions, fraternities, et members
+    public List<ProvinceDTO> getArchivedProvinces() {
+        return provinceRepository.findByArchivedTrue().stream()
+                .map(this::convertToProvinceDTO)
+                .toList();
+    }
+
     public ProvinceDTO getProvinceById(Long id) {
-        Province province = provinceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Province not found"));
+        Province province = getProvince(id);
+        if (province.isArchived()) {
+            throw new IllegalStateException("Cette province est archivee.");
+        }
         return convertToProvinceDTO(province);
     }
 
-    // Mettre à jour une province
     public Province updateProvince(Long id, Province provinceDetails) {
-        Province province = provinceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Province not found"));
-        province.setName(provinceDetails.getName());
+        Province province = getProvince(id);
+        if (province.isArchived()) {
+            throw new IllegalStateException("Une province archivee doit etre reactivee avant modification.");
+        }
+        String name = normalizeName(provinceDetails.getName(), "Le nom de la province est requis.");
+        if (provinceRepository.existsByNameIgnoreCaseAndIdNot(name, id)) {
+            throw new IllegalArgumentException("Une province portant ce nom existe deja.");
+        }
+        province.setName(name);
         province.setDescription(provinceDetails.getDescription());
         return provinceRepository.save(province);
     }
 
-    // Supprimer une province
+    @Transactional
+    public ProvinceDTO archiveProvince(Long id) {
+        Province province = getProvince(id);
+        if (province.isArchived()) {
+            throw new IllegalStateException("Cette province est deja archivee.");
+        }
+        if (regionRepository.existsByProvinceIdAndArchivedFalse(id)) {
+            throw new IllegalStateException("Impossible d'archiver cette province tant qu'elle contient des regions actives.");
+        }
+        province.setArchived(true);
+        province.setArchivedAt(LocalDateTime.now());
+        var users = userRepository.findByProvinceId(id);
+        users.forEach(user -> user.setProvince(null));
+        userRepository.saveAll(users);
+        return convertToProvinceDTO(provinceRepository.save(province));
+    }
+
+    public ProvinceDTO restoreProvince(Long id) {
+        Province province = getProvince(id);
+        if (!province.isArchived()) {
+            throw new IllegalStateException("Cette province est deja active.");
+        }
+        province.setArchived(false);
+        province.setArchivedAt(null);
+        return convertToProvinceDTO(provinceRepository.save(province));
+    }
+
     public void deleteProvince(Long id) {
-        Province province = provinceRepository.findById(id)
+        throw new IllegalStateException("La suppression physique des provinces est interdite. Utilisez l'archivage logique.");
+    }
+
+    private Province getProvince(Long id) {
+        return provinceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Province not found"));
-        provinceRepository.delete(province);
+    }
+
+    private ProvinceDTO convertToProvinceDTO(Province province) {
+        ProvinceDTO dto = new ProvinceDTO();
+        dto.setId(province.getId());
+        dto.setName(province.getName());
+        dto.setDescription(province.getDescription());
+        dto.setArchived(province.isArchived());
+        dto.setRegions(province.getRegions() == null ? List.of() : province.getRegions().stream()
+                .filter(region -> !region.isArchived())
+                .map(this::convertToRegionDTO)
+                .toList());
+        return dto;
+    }
+
+    private RegionDTO convertToRegionDTO(Region region) {
+        RegionDTO dto = new RegionDTO();
+        dto.setId(region.getId());
+        dto.setName(region.getName());
+        dto.setDescription(region.getDescription());
+        dto.setArchived(region.isArchived());
+        dto.setProvinceId(region.getProvince().getId());
+        dto.setFraternities(region.getFraternities() == null ? List.of() : region.getFraternities().stream()
+                .filter(fraternity -> !fraternity.isArchived())
+                .map(this::convertToFraternityDTO)
+                .toList());
+        return dto;
+    }
+
+    private FraternityDTO convertToFraternityDTO(Fraternity fraternity) {
+        FraternityDTO dto = new FraternityDTO();
+        dto.setId(fraternity.getId());
+        dto.setName(fraternity.getName());
+        dto.setDescription(fraternity.getDescription());
+        dto.setArchived(fraternity.isArchived());
+        dto.setRegionId(fraternity.getRegion().getId());
+        dto.setMembers(fraternity.getCmdaMembers() == null ? List.of() : fraternity.getCmdaMembers().stream()
+                .map(this::convertToMemberDTO)
+                .toList());
+        return dto;
+    }
+
+    private CmdaMemberDTO convertToMemberDTO(org.cmda.management.entities.CmdaMember member) {
+        CmdaMemberDTO dto = new CmdaMemberDTO();
+        dto.setId(member.getId());
+        dto.setFirstName(member.getFirstName());
+        dto.setLastName(member.getLastName());
+        dto.setEmail(member.getEmail());
+        dto.setPhoneNumber(member.getPhoneNumber());
+        dto.setBirthday(member.getBirthday());
+        dto.setProfession(member.getProfession());
+        dto.setStatus(member.getStatus().name());
+        dto.setFraternityId(member.getFraternity().getId());
+        return dto;
+    }
+
+    private String normalizeName(String name, String errorMessage) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return name.trim().replaceAll("\\s+", " ");
     }
 }

@@ -15,6 +15,24 @@ public interface FraternityRepository extends JpaRepository<Fraternity, Long> {
 
     long countByRegionProvinceId(Long provinceId);
 
+    List<Fraternity> findByArchivedFalse();
+
+    List<Fraternity> findByArchivedTrue();
+
+    List<Fraternity> findByRegionIdAndArchivedFalse(Long regionId);
+
+    long countByArchivedFalse();
+
+    long countByRegionIdAndArchivedFalse(Long regionId);
+
+    long countByRegionProvinceIdAndArchivedFalse(Long provinceId);
+
+    boolean existsByRegionIdAndArchivedFalse(Long regionId);
+
+    boolean existsByRegionIdAndNameIgnoreCase(Long regionId, String name);
+
+    boolean existsByRegionIdAndNameIgnoreCaseAndIdNot(Long regionId, String name, Long id);
+
     // Trouver une fraternité par son nom
     Optional<Fraternity> findByName(String name);
 
@@ -24,7 +42,11 @@ public interface FraternityRepository extends JpaRepository<Fraternity, Long> {
     // Permmet de vérifier qu'une Fraternité appartient à une région donnée // Utile pour le REGIONAL
     Optional<Fraternity> findByIdAndRegionId(Long id, Long regionId);
 
+    Optional<Fraternity> findByIdAndRegionIdAndArchivedFalse(Long id, Long regionId);
+
     // Permmet de vérifier qu'une Fraternité appartient à une province donnée // Utile pour le PROVINCIAL
     Optional<Fraternity> findByIdAndRegionProvinceId(Long id, Long provinceId);
+
+    Optional<Fraternity> findByIdAndRegionProvinceIdAndArchivedFalse(Long id, Long provinceId);
 
 }

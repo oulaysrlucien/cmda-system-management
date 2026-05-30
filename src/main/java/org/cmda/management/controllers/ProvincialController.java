@@ -42,6 +42,12 @@ public class ProvincialController {
         return new ResponseEntity<>(provinces, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/archived")
+    public ResponseEntity<List<ProvinceDTO>> getArchivedProvinces() {
+        return ResponseEntity.ok(provinceService.getArchivedProvinces());
+    }
+
     // Lire une province par ID avec ses régions, fraternities, et members
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
@@ -64,5 +70,17 @@ public class ProvincialController {
     public ResponseEntity<Void> deleteProvince(@PathVariable Long id) {
         provinceService.deleteProvince(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<ProvinceDTO> archiveProvince(@PathVariable Long id) {
+        return ResponseEntity.ok(provinceService.archiveProvince(id));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<ProvinceDTO> restoreProvince(@PathVariable Long id) {
+        return ResponseEntity.ok(provinceService.restoreProvince(id));
     }
 }

@@ -8,6 +8,7 @@ import org.cmda.management.entities.Province;
 import org.cmda.management.entities.Region;
 import org.cmda.management.entities.User;
 import org.cmda.management.enums.Role;
+import org.cmda.management.enums.MemberStatus;
 import org.cmda.management.repositories.CmdaMemberRepository;
 import org.cmda.management.repositories.FraternityRepository;
 import org.cmda.management.repositories.ProvinceRepository;
@@ -70,14 +71,14 @@ public class CurrentUserScopeService {
         User user = currentUserService.getCurrentUser();
 
         if (user.getRole() == Role.ADMIN) {
-            return regionRepository.findAll().stream()
+            return regionRepository.findByArchivedFalse().stream()
                     .map(regionService::convertToRegionDTO)
                     .toList();
         }
 
         Province province = requireProvince(user);
 
-        return regionRepository.findByProvinceId(province.getId()).stream()
+        return regionRepository.findByProvinceIdAndArchivedFalse(province.getId()).stream()
                 .map(regionService::convertToRegionDTO)
                 .toList();
     }
@@ -116,7 +117,7 @@ public class CurrentUserScopeService {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new IllegalStateException("Region introuvable."));
 
-        if (region.getProvince() == null || !province.getId().equals(region.getProvince().getId())) {
+        if (region.isArchived() || region.getProvince() == null || !province.getId().equals(region.getProvince().getId())) {
             throw new IllegalStateException("Cette region ne fait pas partie de la province de l'utilisateur.");
         }
 
@@ -188,8 +189,8 @@ public class CurrentUserScopeService {
     private List<String> resolveManageableResources(Role role) {
         return switch (role) {
             case ADMIN -> List.of("USERS", "PROVINCES", "REGIONS", "FRATERNITIES", "MEMBERS");
-            case PROVINCIAL -> List.of("OWN_REGIONS", "OWN_FRATERNITIES", "OWN_MEMBERS");
-            case REGIONAL -> List.of("OWN_FRATERNITIES", "OWN_MEMBERS");
+            case PROVINCIAL -> List.of("OWN_MEMBERS");
+            case REGIONAL -> List.of("OWN_MEMBERS");
             case BERGER -> List.of("OWN_MEMBERS");
         };
     }
@@ -199,31 +200,31 @@ public class CurrentUserScopeService {
 
         switch (user.getRole()) {
             case ADMIN -> {
-                metrics.setProvincesCount(provinceRepository.count());
-                metrics.setRegionsCount(regionRepository.count());
-                metrics.setFraternitiesCount(fraternityRepository.count());
-                metrics.setMembersCount(cmdaMemberRepository.count());
+                metrics.setProvincesCount(provinceRepository.countByArchivedFalse());
+                metrics.setRegionsCount(regionRepository.countByArchivedFalse());
+                metrics.setFraternitiesCount(fraternityRepository.countByArchivedFalse());
+                metrics.setMembersCount(cmdaMemberRepository.countByStatusNot(MemberStatus.ARCHIVED));
             }
             case PROVINCIAL -> {
                 Long provinceId = requireProvince(user).getId();
                 metrics.setProvincesCount(1);
-                metrics.setRegionsCount(regionRepository.countByProvinceId(provinceId));
-                metrics.setFraternitiesCount(fraternityRepository.countByRegionProvinceId(provinceId));
-                metrics.setMembersCount(cmdaMemberRepository.countByFraternityRegionProvinceId(provinceId));
+                metrics.setRegionsCount(regionRepository.countByProvinceIdAndArchivedFalse(provinceId));
+                metrics.setFraternitiesCount(fraternityRepository.countByRegionProvinceIdAndArchivedFalse(provinceId));
+                metrics.setMembersCount(cmdaMemberRepository.countByFraternityRegionProvinceIdAndStatusNot(provinceId, MemberStatus.ARCHIVED));
             }
             case REGIONAL -> {
                 Long regionId = requireRegion(user).getId();
                 metrics.setProvincesCount(1);
                 metrics.setRegionsCount(1);
-                metrics.setFraternitiesCount(fraternityRepository.countByRegionId(regionId));
-                metrics.setMembersCount(cmdaMemberRepository.countByFraternityRegionId(regionId));
+                metrics.setFraternitiesCount(fraternityRepository.countByRegionIdAndArchivedFalse(regionId));
+                metrics.setMembersCount(cmdaMemberRepository.countByFraternityRegionIdAndStatusNot(regionId, MemberStatus.ARCHIVED));
             }
             case BERGER -> {
                 Long fraternityId = requireFraternity(user).getId();
                 metrics.setProvincesCount(user.getProvince() != null ? 1 : 0);
                 metrics.setRegionsCount(user.getRegion() != null ? 1 : 0);
                 metrics.setFraternitiesCount(1);
-                metrics.setMembersCount(cmdaMemberRepository.countByFraternityId(fraternityId));
+                metrics.setMembersCount(cmdaMemberRepository.countByFraternityIdAndStatusNot(fraternityId, MemberStatus.ARCHIVED));
             }
         }
 
@@ -234,6 +235,9 @@ public class CurrentUserScopeService {
         if (user.getProvince() == null) {
             throw new IllegalStateException("Utilisateur PROVINCIAL sans province associee.");
         }
+        if (user.getProvince().isArchived()) {
+            throw new IllegalStateException("La province de l'utilisateur est archivee.");
+        }
 
         return user.getProvince();
     }
@@ -242,6 +246,9 @@ public class CurrentUserScopeService {
         if (user.getRegion() == null) {
             throw new IllegalStateException("Utilisateur REGIONAL sans region associee.");
         }
+        if (user.getRegion().isArchived()) {
+            throw new IllegalStateException("La region de l'utilisateur est archivee.");
+        }
 
         return user.getRegion();
     }
@@ -249,6 +256,9 @@ public class CurrentUserScopeService {
     private Fraternity requireFraternity(User user) {
         if (user.getFraternity() == null) {
             throw new IllegalStateException("Utilisateur BERGER sans fraternite associee.");
+        }
+        if (user.getFraternity().isArchived()) {
+            throw new IllegalStateException("La fraternite de l'utilisateur est archivee.");
         }
 
         return user.getFraternity();
