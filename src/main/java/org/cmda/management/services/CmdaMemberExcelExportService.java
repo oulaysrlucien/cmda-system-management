@@ -21,12 +21,16 @@ public class CmdaMemberExcelExportService {
     @Autowired
     private CmdaMemberService cmdaMemberService;
 
-    public byte[] exportMembersToExcel(Long fraternityId, String firstName, String lastName, String profession) {
+    public byte[] exportMembersToExcel(String keyword, Long fraternityId, Long regionId, Long provinceId, String firstName, String lastName, String profession, String status) {
         List<CmdaMemberDTO> members = cmdaMemberService.getMembersForCurrentUserExport(
+                keyword,
                 fraternityId,
+                regionId,
+                provinceId,
                 firstName,
                 lastName,
-                profession
+                profession,
+                status
         );
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

@@ -271,12 +271,16 @@ public class CmdaMemberController {
     // Endpoint pour exporter les membres en CSV
     @GetMapping("/export/csv")
     public ResponseEntity<String> exportMembersToCSV(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long provinceId,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String profession) {
+            @RequestParam(required = false) String profession,
+            @RequestParam(required = false) String status) {
 
-        String csvContent = cmdaMemberCSVexportService.exportMembersToCSV(fraternityId, firstName, lastName, profession);
+        String csvContent = cmdaMemberCSVexportService.exportMembersToCSV(keyword, fraternityId, regionId, provinceId, firstName, lastName, profession, status);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Disposition", "attachment; filename=members.csv");
@@ -288,16 +292,24 @@ public class CmdaMemberController {
     // Endpoint pour exporter les membres en EXCEL
     @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportMembersToExcel(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long provinceId,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String profession) {
+            @RequestParam(required = false) String profession,
+            @RequestParam(required = false) String status) {
 
         byte[] excelContent = cmdaMemberExcelExportService.exportMembersToExcel(
+                keyword,
                 fraternityId,
+                regionId,
+                provinceId,
                 firstName,
                 lastName,
-                profession
+                profession,
+                status
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -311,16 +323,24 @@ public class CmdaMemberController {
     // Endpoint pour exporter les membres en PDF
     @GetMapping("/export/pdf")
     public ResponseEntity<byte[]> exportMembersToPdf(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long fraternityId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long provinceId,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String profession) {
+            @RequestParam(required = false) String profession,
+            @RequestParam(required = false) String status) {
 
         byte[] pdfContent = cmdaMemberPdfExportService.exportMembersToPdf(
+                keyword,
                 fraternityId,
+                regionId,
+                provinceId,
                 firstName,
                 lastName,
-                profession
+                profession,
+                status
         );
 
         HttpHeaders headers = new HttpHeaders();

@@ -484,10 +484,14 @@ public class CmdaMemberService {
      * reste toujours impose par le backend.
      */
     public List<CmdaMemberDTO> getMembersForCurrentUserExport(
+            String keyword,
             Long fraternityId,
+            Long regionId,
+            Long provinceId,
             String firstName,
             String lastName,
-            String profession
+            String profession,
+            String status
     ) {
         User currentUser = currentUserService.getCurrentUser();
 
@@ -537,8 +541,33 @@ public class CmdaMemberService {
             }
 
             // Filtres optionnels demandes par le frontend
+            if (provinceId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("fraternity").get("region").get("province").get("id"),
+                        provinceId
+                ));
+            }
+
+            if (regionId != null) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("fraternity").get("region").get("id"),
+                        regionId
+                ));
+            }
+
             if (fraternityId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("fraternity").get("id"), fraternityId));
+            }
+
+            if (keyword != null && !keyword.isBlank()) {
+                String normalizedKeyword = "%" + keyword.toLowerCase() + "%";
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("phoneNumber")), normalizedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("profession")), normalizedKeyword)
+                ));
             }
 
             if (firstName != null && !firstName.isEmpty()) {
@@ -749,6 +778,13 @@ public class CmdaMemberService {
                 predicates.add(criteriaBuilder.equal(
                         root.get("fraternity").get("id"),
                         fraternityId
+                ));
+            }
+
+            if (status != null && !status.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(
+                        root.get("status"),
+                        MemberStatus.valueOf(status.toUpperCase())
                 ));
             }
 

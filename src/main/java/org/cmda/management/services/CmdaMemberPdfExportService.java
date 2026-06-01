@@ -20,12 +20,16 @@ public class CmdaMemberPdfExportService {
     @Autowired
     private CmdaMemberService cmdaMemberService;
 
-    public byte[] exportMembersToPdf(Long fraternityId, String firstName, String lastName, String profession) {
+    public byte[] exportMembersToPdf(String keyword, Long fraternityId, Long regionId, Long provinceId, String firstName, String lastName, String profession, String status) {
         List<CmdaMemberDTO> members = cmdaMemberService.getMembersForCurrentUserExport(
+                keyword,
                 fraternityId,
+                regionId,
+                provinceId,
                 firstName,
                 lastName,
-                profession
+                profession,
+                status
         );
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
