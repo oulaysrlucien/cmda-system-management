@@ -1,5 +1,6 @@
 package org.cmda.management.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.CurrentUserScopeDTO;
 import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.dtos.RegionDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/me")
+@Tag(name = "03 - SCOPE", description = "Perimetre courant de l'utilisateur connecte.")
 public class CurrentUserScopeController {
 
     private final CurrentUserScopeService currentUserScopeService;

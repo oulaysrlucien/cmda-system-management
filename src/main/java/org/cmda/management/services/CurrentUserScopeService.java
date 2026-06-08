@@ -54,6 +54,8 @@ public class CurrentUserScopeService {
 
         scope.setUserId(user.getId());
         scope.setUsername(user.getUsername());
+        scope.setMemberId(user.getMember() != null ? user.getMember().getId() : null);
+        scope.setDisplayName(resolveDisplayName(user));
         scope.setRole(user.getRole().name());
         scope.setProvince(toRef(user.getProvince()));
         scope.setRegion(toRef(user.getRegion()));
@@ -286,5 +288,18 @@ public class CurrentUserScopeService {
         }
 
         return new CurrentUserScopeDTO.ScopeRefDTO(fraternity.getId(), fraternity.getName(), fraternity.getDescription());
+    }
+
+    private String resolveDisplayName(User user) {
+        if (user.getMember() != null) {
+            String firstName = user.getMember().getFirstName() != null ? user.getMember().getFirstName().trim() : "";
+            String lastName = user.getMember().getLastName() != null ? user.getMember().getLastName().trim() : "";
+            String fullName = (firstName + " " + lastName).trim();
+            if (!fullName.isBlank()) {
+                return fullName;
+            }
+        }
+
+        return user.getUsername();
     }
 }

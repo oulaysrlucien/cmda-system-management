@@ -19,6 +19,8 @@ public class UserCreationDTO {
     private Long provinceId;  // Si l'utilisateur est Provincial
     private Long regionId;    // Si l'utilisateur est Regional
     private Long fraternityId;  // Si l'utilisateur est Berger
+    private Long memberId;
+    private Boolean enabled;
 
     // Getters et Setters
     public String getUsername() {
@@ -67,5 +69,21 @@ public class UserCreationDTO {
 
     public void setFraternityId(Long fraternityId) {
         this.fraternityId = fraternityId;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

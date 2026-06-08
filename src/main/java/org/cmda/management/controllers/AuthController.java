@@ -1,9 +1,11 @@
 package org.cmda.management.controllers;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.AuthRequestDTO;
 import org.cmda.management.dtos.AuthResponseDTO;
 import org.cmda.management.services.JwtTokenService;
+import org.cmda.management.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "01 - AUTH", description = "Connexion JWT et recuperation du token.")
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -42,6 +45,8 @@ public class AuthController {
     @Autowired
     private JwtTokenService jwtTokenService;
 
+    @Autowired
+    private UserService userService;
 
 
     @PostMapping("/authenticate")
@@ -61,6 +66,7 @@ public class AuthController {
 
             // Génère le token JWT avec les rôles de l'utilisateur
             String token = jwtTokenService.generateToken(username, roles);
+            userService.recordSuccessfulLogin(username);
 
             // Renvoie la réponse avec le token
             return ResponseEntity.ok(new JwtResponse(token));

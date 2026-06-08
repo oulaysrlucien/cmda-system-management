@@ -1,16 +1,19 @@
 package org.cmda.management.dtos;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class UserDTO {
     private Long id;
     private String username;
-    private String role;  // Rôle de l'utilisateur (ADMIN, PROVINCIAL, REGIONAL, BERGER)
-    private String warningMessage;  // Champ pour indiquer les informations manquantes
+    private String role;
+    private String warningMessage;
+    private Long memberId;
+    private String displayName;
+    private Boolean enabled;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime lastLoginAt;
 
-
-
-    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -35,9 +38,6 @@ public class UserDTO {
         this.role = role;
     }
 
-
-
-
     public String getWarningMessage() {
         return warningMessage;
     }
@@ -46,5 +46,51 @@ public class UserDTO {
         this.warningMessage = warningMessage;
     }
 
+    public Long getMemberId() {
+        return memberId;
+    }
 
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
+    }
 }

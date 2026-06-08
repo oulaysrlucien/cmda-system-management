@@ -1,0 +1,15 @@
+ALTER TABLE users
+    MODIFY username VARCHAR(120) NOT NULL,
+    ADD COLUMN member_id BIGINT NULL,
+    ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN last_login_at DATETIME NULL;
+
+ALTER TABLE users
+    ADD CONSTRAINT uk_users_member_id UNIQUE (member_id);
+
+ALTER TABLE users
+    ADD CONSTRAINT fk_users_member
+        FOREIGN KEY (member_id)
+        REFERENCES cmda_members(id);

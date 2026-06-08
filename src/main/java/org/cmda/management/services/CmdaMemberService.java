@@ -4,6 +4,7 @@ import org.cmda.management.entities.CmdaMember;
 import org.cmda.management.dtos.CmdaMemberDTO;
 import org.cmda.management.repositories.CmdaMemberRepository;
 import org.cmda.management.enums.MemberStatus;
+import org.cmda.management.enums.Role;
 import org.cmda.management.entities.Fraternity;
 import org.cmda.management.repositories.FraternityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,10 @@ public class CmdaMemberService {
         );
 
         CmdaMember cmdaMember = convertToEntity(cmdaMemberDTO);
+        if ((cmdaMemberDTO.getBirthday() != null || cmdaMemberDTO.getBaptismDate() != null)
+                && currentUser.getRole() != Role.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN can set birth and baptism dates.");
+        }
         cmdaMember.setFraternity(targetFraternity);
 
         CmdaMember savedMember = cmdaMemberRepository.save(cmdaMember);
@@ -109,7 +114,8 @@ public class CmdaMemberService {
             dto.setLastName(member.getLastName());
             dto.setEmail(member.getEmail());
             dto.setPhoneNumber(member.getPhoneNumber());
-            dto.setBirthday(member.getBirthday().toString());
+            dto.setBirthday(null);
+            dto.setBaptismDate(member.getBaptismDate() != null ? member.getBaptismDate().toString() : null);
             dto.setProfession(member.getProfession());
             dto.setStatus(member.getStatus().toString());
 
@@ -171,7 +177,18 @@ public class CmdaMemberService {
         cmdaMember.setLastName(cmdaMemberDTO.getLastName());
         cmdaMember.setEmail(cmdaMemberDTO.getEmail());
         cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
-        cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
+        if (cmdaMemberDTO.getBirthday() != null) {
+            if (currentUser.getRole() != Role.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN can update the birth date.");
+            }
+            cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
+        }
+        if (cmdaMemberDTO.getBaptismDate() != null) {
+            if (currentUser.getRole() != Role.ADMIN) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only ADMIN can update the baptism date.");
+            }
+            cmdaMember.setBaptismDate(cmdaMemberDTO.getBaptismDate());
+        }
         cmdaMember.setProfession(cmdaMemberDTO.getProfession());
        // cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
 
@@ -362,6 +379,7 @@ public class CmdaMemberService {
         cmdaMember.setEmail(cmdaMemberDTO.getEmail());
         cmdaMember.setPhoneNumber(cmdaMemberDTO.getPhoneNumber());
         cmdaMember.setBirthday(cmdaMemberDTO.getBirthday());
+        cmdaMember.setBaptismDate(cmdaMemberDTO.getBaptismDate());
         cmdaMember.setProfession(cmdaMemberDTO.getProfession());
         cmdaMember.setStatus(MemberStatus.valueOf(cmdaMemberDTO.getStatus().toUpperCase()));
 
@@ -377,7 +395,11 @@ public class CmdaMemberService {
         dto.setLastName(cmdaMember.getLastName());
         dto.setEmail(cmdaMember.getEmail());
         dto.setPhoneNumber(cmdaMember.getPhoneNumber());
-        dto.setBirthday(cmdaMember.getBirthday());
+        // La date de naissance est sensible. Elle est exposee uniquement a l'ADMIN
+        // par la nouvelle API securisee /api/members/{id}.
+        dto.setBirthday(null);
+        dto.setBaptismDate(cmdaMember.getBaptismDate());
+        dto.setPhotoReference(cmdaMember.getPhotoReference());
         dto.setProfession(cmdaMember.getProfession());
         dto.setStatus(cmdaMember.getStatus().toString());
 
@@ -437,7 +459,8 @@ public class CmdaMemberService {
                     dto.setLastName(member.getLastName());
                     dto.setEmail(member.getEmail());
                     dto.setPhoneNumber(member.getPhoneNumber());
-                    dto.setBirthday(member.getBirthday());
+                    dto.setBirthday(null);
+                    dto.setBaptismDate(member.getBaptismDate());
                     dto.setProfession(member.getProfession());
                     dto.setStatus(member.getStatus().name());
                     dto.setFraternityId(member.getFraternity().getId());
@@ -460,7 +483,8 @@ public class CmdaMemberService {
                     dto.setLastName(member.getLastName());
                     dto.setEmail(member.getEmail());
                     dto.setPhoneNumber(member.getPhoneNumber());
-                    dto.setBirthday(member.getBirthday());
+                    dto.setBirthday(null);
+                    dto.setBaptismDate(member.getBaptismDate());
                     dto.setProfession(member.getProfession());
                     dto.setStatus(member.getStatus().name());
                     dto.setFraternityId(member.getFraternity().getId());

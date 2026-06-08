@@ -151,7 +151,8 @@ public class FraternityService {
                     memberDTO.setLastName(member.getLastName());
                     memberDTO.setEmail(member.getEmail());
                     memberDTO.setPhoneNumber(member.getPhoneNumber());
-                    memberDTO.setBirthday(member.getBirthday());
+                    memberDTO.setBirthday(null);
+                    memberDTO.setBaptismDate(member.getBaptismDate());
                     memberDTO.setProfession(member.getProfession());
                     memberDTO.setStatus(member.getStatus().name());
                     memberDTO.setFraternityId(fraternity.getId());

@@ -1,6 +1,7 @@
 package org.cmda.management.controllers;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.FraternityDTO;
 import org.cmda.management.entities.Fraternity;
 import org.cmda.management.services.FraternityService;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/fraternities")
+@Tag(name = "07 - STRUCTURES - FRATERNITES", description = "CRUD et cycle de vie des fraternites.")
 public class BergerFraternityController {
 
     @Autowired

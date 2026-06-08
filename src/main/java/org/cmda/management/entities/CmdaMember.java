@@ -34,6 +34,8 @@ public class CmdaMember {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
+    private LocalDate baptismDate;
+
     @Column(nullable = true)
     private String profession;
 
@@ -160,6 +162,14 @@ public class CmdaMember {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public LocalDate getBaptismDate() {
+        return baptismDate;
+    }
+
+    public void setBaptismDate(LocalDate baptismDate) {
+        this.baptismDate = baptismDate;
     }
 
     public String getProfession() {

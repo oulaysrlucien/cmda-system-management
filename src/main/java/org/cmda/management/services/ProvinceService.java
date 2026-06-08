@@ -161,7 +161,8 @@ public class ProvinceService {
         dto.setLastName(member.getLastName());
         dto.setEmail(member.getEmail());
         dto.setPhoneNumber(member.getPhoneNumber());
-        dto.setBirthday(member.getBirthday());
+        dto.setBirthday(null);
+        dto.setBaptismDate(member.getBaptismDate());
         dto.setProfession(member.getProfession());
         dto.setStatus(member.getStatus().name());
         dto.setFraternityId(member.getFraternity().getId());

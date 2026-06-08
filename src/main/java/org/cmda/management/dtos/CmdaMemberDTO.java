@@ -17,6 +17,9 @@ public class CmdaMemberDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthday;  // Champ pour la date de naissance
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate baptismDate;
+
     private String profession;  // Champ pour la profession
     private String status;  // Champ pour le statut (ACTIVE, INACTIVE, etc.)
 
@@ -31,6 +34,7 @@ public class CmdaMemberDTO {
     // MISE A JOUR : informations de province pour valider le filtrage metier
     private Long provinceId;
     private String provinceName;
+    private String photoReference;
 
 
 
@@ -89,6 +93,14 @@ public class CmdaMemberDTO {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public LocalDate getBaptismDate() {
+        return baptismDate;
+    }
+
+    public void setBaptismDate(LocalDate baptismDate) {
+        this.baptismDate = baptismDate;
     }
 
     // Getter et setter pour la profession
@@ -161,6 +173,14 @@ public class CmdaMemberDTO {
 
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
+    }
+
+    public String getPhotoReference() {
+        return photoReference;
+    }
+
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
     }
 
 

@@ -1,5 +1,6 @@
 package org.cmda.management.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.UserCreationDTO;
 import org.cmda.management.dtos.UserDTO;
 import org.cmda.management.entities.User;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "02 - USERS", description = "Gestion des comptes utilisateurs par l'ADMIN.")
 public class UserController {
 
     @Autowired

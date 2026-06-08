@@ -8,6 +8,7 @@ public class CmdaMemberWithFraternityDTO {
     private String email;
     private String phoneNumber;
     private String birthday;
+    private String baptismDate;
     private String profession;
     private String status;
 
@@ -63,6 +64,14 @@ public class CmdaMemberWithFraternityDTO {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public String getBaptismDate() {
+        return baptismDate;
+    }
+
+    public void setBaptismDate(String baptismDate) {
+        this.baptismDate = baptismDate;
     }
 
     public String getProfession() {

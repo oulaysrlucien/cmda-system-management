@@ -1,112 +1,176 @@
 package org.cmda.management.services;
 
-import org.cmda.management.dtos.UserCreationDTO;
-import org.cmda.management.entities.User;
-import org.cmda.management.enums.Role;
-import org.cmda.management.repositories.UserRepository;
-import org.cmda.management.repositories.ProvinceRepository;
-import org.cmda.management.repositories.RegionRepository;
-import org.cmda.management.repositories.FraternityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-
-import org.cmda.management.entities.Province;
-import org.cmda.management.entities.Region;
-import org.cmda.management.dtos.UserDTO;
-import java.util.stream.Collectors;
-import org.cmda.management.entities.Fraternity;
-import org.cmda.management.dtos.FraternityDTO;
-import org.cmda.management.entities.Region;
-import org.cmda.management.dtos.RegionDTO;
-import org.cmda.management.dtos.ProvinceDTO;
-import org.cmda.management.entities.CmdaMember;
 import org.cmda.management.dtos.CmdaMemberDTO;
-
+import org.cmda.management.dtos.FraternityDTO;
+import org.cmda.management.dtos.ProvinceDTO;
+import org.cmda.management.dtos.RegionDTO;
+import org.cmda.management.dtos.UserBergerFraternityDTO;
+import org.cmda.management.dtos.UserCreationDTO;
+import org.cmda.management.dtos.UserDTO;
 import org.cmda.management.dtos.UserProvincialDTO;
 import org.cmda.management.dtos.UserRegionalDTO;
-import org.cmda.management.dtos.UserBergerFraternityDTO;
+import org.cmda.management.entities.CmdaMember;
+import org.cmda.management.entities.Fraternity;
+import org.cmda.management.entities.Province;
+import org.cmda.management.entities.Region;
+import org.cmda.management.entities.User;
+import org.cmda.management.enums.Role;
+import org.cmda.management.repositories.CmdaMemberRepository;
+import org.cmda.management.repositories.FraternityRepository;
+import org.cmda.management.repositories.ProvinceRepository;
+import org.cmda.management.repositories.RegionRepository;
+import org.cmda.management.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-
-
-
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final ProvinceRepository provinceRepository;
+    private final RegionRepository regionRepository;
+    private final FraternityRepository fraternityRepository;
+    private final CmdaMemberRepository cmdaMemberRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public UserService(
+            PasswordEncoder passwordEncoder,
+            UserRepository userRepository,
+            ProvinceRepository provinceRepository,
+            RegionRepository regionRepository,
+            FraternityRepository fraternityRepository,
+            CmdaMemberRepository cmdaMemberRepository
+    ) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.provinceRepository = provinceRepository;
+        this.regionRepository = regionRepository;
+        this.fraternityRepository = fraternityRepository;
+        this.cmdaMemberRepository = cmdaMemberRepository;
+    }
 
-    @Autowired
-    private ProvinceRepository provinceRepository;
-
-    @Autowired
-    private RegionRepository regionRepository;
-
-    @Autowired
-    private FraternityRepository fraternityRepository;
-
-
-
-
-
-
-    // Créer ou mettre à jour un utilisateur
     public User saveUser(UserCreationDTO userDTO) {
         logger.info("Creating user with username: {}", userDTO.getUsername());
-
-        // Validation simple des entrées
-        if (userDTO.getUsername() == null || userDTO.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("Le nom d'utilisateur est requis.");
-        }
+        validateCredentialsForCreate(userDTO);
 
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setEnabled(userDTO.getEnabled() == null || userDTO.getEnabled());
 
-        Role role = Role.valueOf(userDTO.getRole().toUpperCase());
+        Role role = parseRole(userDTO.getRole());
         if (role == Role.ADMIN) {
             throw new IllegalArgumentException("La creation d'un compte ADMIN depuis l'application est interdite pour le MVP.");
         }
         user.setRole(role);
+        applyScope(userDTO, user);
+        attachMemberIfProvided(userDTO, user, null);
 
-        // Gestion des entités associées en fonction du rôle
-        switch (role) {
-            case PROVINCIAL:
-                handleProvincialUser(userDTO, user);
-                break;
-            case REGIONAL:
-                handleRegionalUser(userDTO, user);
-                break;
-            case BERGER:
-                handleBergerUser(userDTO, user);
-                break;
-            case ADMIN:
-                throw new IllegalArgumentException("La creation d'un compte ADMIN depuis l'application est interdite pour le MVP.");
-            default:
-                throw new IllegalArgumentException("Invalid role specified");
-        }
-
-        logger.info("User created successfully with username: {}", userDTO.getUsername());
         return userRepository.save(user);
     }
 
-    // Gestion du Provincial
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(this::convertToDTO).toList();
+    }
+
+    public UserDTO convertToDTO(User user) {
+        return switch (user.getRole()) {
+            case PROVINCIAL -> toProvincialDTO(user);
+            case REGIONAL -> toRegionalDTO(user);
+            case BERGER -> toBergerDTO(user);
+            case ADMIN -> toGenericDTO(user);
+        };
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public List<UserDTO> findByRoleDTO(Role role) {
+        return userRepository.findByRole(role).stream().map(this::convertToDTO).toList();
+    }
+
+    public UserDTO findUserByIdDTO(Long id) {
+        return userRepository.findById(id).map(this::convertToDTO).orElse(null);
+    }
+
+    public User updateUser(Long id, UserCreationDTO userDTO) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (userDTO.getUsername() != null && !userDTO.getUsername().isBlank()) {
+            existingUser.setUsername(userDTO.getUsername());
+        }
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+        if (userDTO.getEnabled() != null) {
+            existingUser.setEnabled(userDTO.getEnabled());
+        }
+
+        Role role = parseRole(userDTO.getRole());
+        if (role == Role.ADMIN && existingUser.getRole() != Role.ADMIN) {
+            throw new IllegalArgumentException("La promotion vers ADMIN depuis l'application est interdite pour le MVP.");
+        }
+
+        existingUser.setRole(role);
+        existingUser.setProvince(null);
+        existingUser.setRegion(null);
+        existingUser.setFraternity(null);
+        applyScope(userDTO, existingUser);
+        attachMemberIfProvided(userDTO, existingUser, id);
+
+        return userRepository.save(existingUser);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public void recordSuccessfulLogin(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepository.save(user);
+        }
+    }
+
+    private void validateCredentialsForCreate(UserCreationDTO userDTO) {
+        if (userDTO.getUsername() == null || userDTO.getUsername().isBlank()) {
+            throw new IllegalArgumentException("Le nom d'utilisateur est requis.");
+        }
+        if (userDTO.getPassword() == null || userDTO.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Le mot de passe est requis.");
+        }
+    }
+
+    private Role parseRole(String role) {
+        if (role == null || role.isBlank()) {
+            throw new IllegalArgumentException("Le role est requis.");
+        }
+        return Role.valueOf(role.toUpperCase());
+    }
+
+    private void applyScope(UserCreationDTO userDTO, User user) {
+        switch (user.getRole()) {
+            case PROVINCIAL -> handleProvincialUser(userDTO, user);
+            case REGIONAL -> handleRegionalUser(userDTO, user);
+            case BERGER -> handleBergerUser(userDTO, user);
+            case ADMIN -> logger.info("Admin user updated without additional associations.");
+        }
+    }
+
     private void handleProvincialUser(UserCreationDTO userDTO, User user) {
         if (userDTO.getProvinceId() == null) {
             throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
         }
-
         Province province = provinceRepository.findById(userDTO.getProvinceId())
                 .orElseThrow(() -> new RuntimeException("Province not found"));
         if (province.isArchived()) {
@@ -115,132 +179,149 @@ public class UserService {
         user.setProvince(province);
     }
 
-
-    // Gestion du Regional
     private void handleRegionalUser(UserCreationDTO userDTO, User user) {
         if (userDTO.getRegionId() == null) {
             throw new IllegalArgumentException("Un utilisateur REGIONAL doit etre rattache a une region.");
         }
-
         Region region = regionRepository.findById(userDTO.getRegionId())
                 .orElseThrow(() -> new RuntimeException("Region not found"));
         if (region.isArchived() || region.getProvince().isArchived()) {
             throw new IllegalArgumentException("Impossible d'affecter un Regional a une region archivee.");
         }
-
         user.setRegion(region);
         user.setProvince(region.getProvince());
     }
 
-
-
-    // Gestion du Berger
     private void handleBergerUser(UserCreationDTO userDTO, User user) {
         if (userDTO.getFraternityId() == null) {
             throw new IllegalArgumentException("Un utilisateur BERGER doit etre rattache a une fraternite.");
         }
-
         Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
                 .orElseThrow(() -> new RuntimeException("Fraternity not found"));
         if (fraternity.isArchived() || fraternity.getRegion().isArchived()) {
             throw new IllegalArgumentException("Impossible d'affecter un Berger a une fraternite archivee.");
         }
-
         user.setFraternity(fraternity);
         user.setRegion(fraternity.getRegion());
         user.setProvince(fraternity.getRegion().getProvince());
     }
 
+    private void attachMemberIfProvided(UserCreationDTO userDTO, User user, Long existingUserId) {
+        if (userDTO.getMemberId() == null) {
+            user.setMember(null);
+            return;
+        }
 
+        boolean alreadyLinked = existingUserId == null
+                ? userRepository.existsByMember_Id(userDTO.getMemberId())
+                : userRepository.existsByMember_IdAndIdNot(userDTO.getMemberId(), existingUserId);
+        if (alreadyLinked) {
+            throw new IllegalArgumentException("Ce membre dispose deja d'un compte utilisateur.");
+        }
 
-
-
-    // Méthode pour obtenir tous les utilisateurs (avec les détails province, région, fraternités)
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
+        CmdaMember member = cmdaMemberRepository.findById(userDTO.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("Membre introuvable."));
+        validateMemberScope(user, member);
+        user.setMember(member);
     }
 
+    private void validateMemberScope(User user, CmdaMember member) {
+        if (member.getFraternity() == null || member.getFraternity().getRegion() == null) {
+            throw new IllegalArgumentException("Le membre doit etre rattache a une fraternite et une region.");
+        }
 
+        Long memberFraternityId = member.getFraternity().getId();
+        Long memberRegionId = member.getFraternity().getRegion().getId();
+        Long memberProvinceId = member.getFraternity().getRegion().getProvince() != null
+                ? member.getFraternity().getRegion().getProvince().getId()
+                : null;
 
-
-
-    // Convertir User en UserDTO avec les informations pertinentes
-    public UserDTO convertToDTO(User user) {
-        switch (user.getRole()) {
-            case PROVINCIAL:
-                if (user.getProvince() == null) {
-                    return createWarningDTO(user, "Province manquante pour cet utilisateur Provincial.");
-                }
-                UserProvincialDTO provincialDTO = new UserProvincialDTO();
-                provincialDTO.setId(user.getId());
-                provincialDTO.setUsername(user.getUsername());
-                provincialDTO.setRole(user.getRole().name());
-                provincialDTO.setProvince(convertProvinceToDTO(user.getProvince()));  // Associer la province
-                return provincialDTO;
-
-            case REGIONAL:
-                if (user.getRegion() == null) {
-                    return createWarningDTO(user, "Region manquante pour cet utilisateur Régional.");
-                }
-                UserRegionalDTO regionalDTO = new UserRegionalDTO();
-                regionalDTO.setId(user.getId());
-                regionalDTO.setUsername(user.getUsername());
-                regionalDTO.setRole(user.getRole().name());
-                regionalDTO.setRegion(convertRegionToDTO(user.getRegion()));  // Associer la région
-                return regionalDTO;
-
-            case BERGER:
-                if (user.getFraternity() == null) {
-                    return createWarningDTO(user, "Fraternité manquante pour cet utilisateur Berger.");
-                }
-                UserBergerFraternityDTO bergerDTO = new UserBergerFraternityDTO();
-                bergerDTO.setId(user.getId());
-                bergerDTO.setUsername(user.getUsername());
-                bergerDTO.setRole(user.getRole().name());
-                bergerDTO.setFraternity(convertFraternityToDTO(user.getFraternity()));  // Associer la fraternité
-                return bergerDTO;
-
-            default:
-                UserDTO genericDTO = new UserDTO();
-                genericDTO.setId(user.getId());
-                genericDTO.setUsername(user.getUsername());
-                genericDTO.setRole(user.getRole().name());
-                return genericDTO;
+        if (user.getRole() == Role.BERGER && (user.getFraternity() == null || !user.getFraternity().getId().equals(memberFraternityId))) {
+            throw new IllegalArgumentException("Un Berger doit etre lie a un membre de sa fraternite.");
+        }
+        if (user.getRole() == Role.REGIONAL && (user.getRegion() == null || !user.getRegion().getId().equals(memberRegionId))) {
+            throw new IllegalArgumentException("Un Regional doit etre lie a un membre de sa region.");
+        }
+        if (user.getRole() == Role.PROVINCIAL && (user.getProvince() == null || !user.getProvince().getId().equals(memberProvinceId))) {
+            throw new IllegalArgumentException("Un Provincial doit etre lie a un membre de sa province.");
         }
     }
 
+    private UserDTO toGenericDTO(User user) {
+        UserDTO dto = new UserDTO();
+        fillBaseDTO(dto, user);
+        return dto;
+    }
 
-    // Méthode pour créer un UserDTO avec un message d'avertissement
+    private UserDTO toProvincialDTO(User user) {
+        if (user.getProvince() == null) {
+            return createWarningDTO(user, "Province manquante pour cet utilisateur Provincial.");
+        }
+        UserProvincialDTO dto = new UserProvincialDTO();
+        fillBaseDTO(dto, user);
+        dto.setProvince(convertProvinceToDTO(user.getProvince()));
+        return dto;
+    }
+
+    private UserDTO toRegionalDTO(User user) {
+        if (user.getRegion() == null) {
+            return createWarningDTO(user, "Region manquante pour cet utilisateur Regional.");
+        }
+        UserRegionalDTO dto = new UserRegionalDTO();
+        fillBaseDTO(dto, user);
+        dto.setRegion(convertRegionToDTO(user.getRegion()));
+        return dto;
+    }
+
+    private UserDTO toBergerDTO(User user) {
+        if (user.getFraternity() == null) {
+            return createWarningDTO(user, "Fraternite manquante pour cet utilisateur Berger.");
+        }
+        UserBergerFraternityDTO dto = new UserBergerFraternityDTO();
+        fillBaseDTO(dto, user);
+        dto.setFraternity(convertFraternityToDTO(user.getFraternity()));
+        return dto;
+    }
+
     private UserDTO createWarningDTO(User user, String warningMessage) {
         UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setRole(user.getRole().name());
+        fillBaseDTO(dto, user);
         dto.setWarningMessage(warningMessage);
         return dto;
     }
 
+    private void fillBaseDTO(UserDTO dto, User user) {
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setRole(user.getRole().name());
+        dto.setMemberId(user.getMember() != null ? user.getMember().getId() : null);
+        dto.setDisplayName(resolveDisplayName(user));
+        dto.setEnabled(user.isEnabled());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        dto.setLastLoginAt(user.getLastLoginAt());
+    }
 
-    // Méthode pour convertir une entité Province en DTO
-    // Méthode pour convertir une entité Province en DTO
+    private String resolveDisplayName(User user) {
+        if (user.getMember() != null) {
+            String firstName = user.getMember().getFirstName() != null ? user.getMember().getFirstName().trim() : "";
+            String lastName = user.getMember().getLastName() != null ? user.getMember().getLastName().trim() : "";
+            String fullName = (firstName + " " + lastName).trim();
+            if (!fullName.isBlank()) {
+                return fullName;
+            }
+        }
+        return user.getUsername();
+    }
+
     private ProvinceDTO convertProvinceToDTO(Province province) {
         ProvinceDTO dto = new ProvinceDTO();
         dto.setId(province.getId());
         dto.setName(province.getName());
         dto.setDescription(province.getDescription());
-
-        // Inclure les régions associées si elles existent
-        List<RegionDTO> regions = province.getRegions().stream()
-                .map(this::convertRegionToDTO)
-                .collect(Collectors.toList());
-        dto.setRegions(regions);
-
         return dto;
     }
 
-
-    // Méthode pour convertir une entité Region en DTO
     private RegionDTO convertRegionToDTO(Region region) {
         RegionDTO dto = new RegionDTO();
         dto.setId(region.getId());
@@ -249,33 +330,17 @@ public class UserService {
         if (region.getProvince() != null) {
             dto.setProvinceId(region.getProvince().getId());
         }
-        // Inclure les fraternities associées si elles existent
-        List<FraternityDTO> fraternities = region.getFraternities().stream()
-                .map(this::convertFraternityToDTO)
-                .collect(Collectors.toList());
-        dto.setFraternities(fraternities);
         return dto;
     }
-
-
 
     private FraternityDTO convertFraternityToDTO(Fraternity fraternity) {
         FraternityDTO dto = new FraternityDTO();
         dto.setId(fraternity.getId());
         dto.setName(fraternity.getName());
         dto.setDescription(fraternity.getDescription());
-
-        // Ajouter le regionId dans le DTO
         if (fraternity.getRegion() != null) {
             dto.setRegionId(fraternity.getRegion().getId());
         }
-
-        // Récupérer les membres associés à la fraternité et les convertir en CmdaMemberDTO
-        List<CmdaMemberDTO> members = fraternity.getCmdaMembers().stream()
-                .map(this::convertMemberToDTO)  // Assurez-vous que cette méthode existe
-                .collect(Collectors.toList());
-        dto.setMembers(members);  // Associer la liste des membres au DTO
-
         return dto;
     }
 
@@ -286,140 +351,11 @@ public class UserService {
         dto.setLastName(member.getLastName());
         dto.setEmail(member.getEmail());
         dto.setPhoneNumber(member.getPhoneNumber());
-        dto.setBirthday(member.getBirthday());
+        dto.setBirthday(null);
+        dto.setBaptismDate(member.getBaptismDate());
         dto.setProfession(member.getProfession());
         dto.setStatus(member.getStatus().name());
-        dto.setFraternityId(member.getFraternity().getId());
+        dto.setFraternityId(member.getFraternity() != null ? member.getFraternity().getId() : null);
         return dto;
     }
-
-
-
-
-
-
-    // Méthode pour trouver un utilisateur par son nom d'utilisateur
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    //
-    public List<UserDTO> findByRoleDTO(Role role) {
-        List<User> users = userRepository.findByRole(role);
-        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
-
-
-
-    // Méthode pour obtenir les utilisateurs par rôle
-    public UserDTO findUserByIdDTO(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return null;  // Gérer l'absence d'utilisateur
-        }
-        return convertToDTO(user);
-    }
-
-
-
-
-
-    //
-    public User updateUser(Long id, UserCreationDTO userDTO) {
-        logger.info("Updating user with ID: {}", id);
-
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("User with ID {} not found.", id);
-                    return new RuntimeException("User not found");
-                });
-
-        existingUser.setUsername(userDTO.getUsername());
-        existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-        Role role = Role.valueOf(userDTO.getRole().toUpperCase());
-        if (role == Role.ADMIN && existingUser.getRole() != Role.ADMIN) {
-            throw new IllegalArgumentException("La promotion vers ADMIN depuis l'application est interdite pour le MVP.");
-        }
-        existingUser.setRole(role);
-
-// Nettoyer les anciens rattachements avant d'appliquer le nouveau role
-        existingUser.setProvince(null);
-        existingUser.setRegion(null);
-        existingUser.setFraternity(null);
-
-        switch (role) {
-            case PROVINCIAL:
-                if (userDTO.getProvinceId() == null) {
-                    throw new IllegalArgumentException("Un utilisateur PROVINCIAL doit etre rattache a une province.");
-                }
-
-                Province province = provinceRepository.findById(userDTO.getProvinceId())
-                        .orElseThrow(() -> new RuntimeException("Province not found"));
-                if (province.isArchived()) {
-                    throw new IllegalArgumentException("Impossible d'affecter un Provincial a une province archivee.");
-                }
-                existingUser.setProvince(province);
-                break;
-
-            case REGIONAL:
-                if (userDTO.getRegionId() == null) {
-                    throw new IllegalArgumentException("Un utilisateur REGIONAL doit etre rattache a une region.");
-                }
-
-                Region region = regionRepository.findById(userDTO.getRegionId())
-                        .orElseThrow(() -> new RuntimeException("Region not found"));
-                if (region.isArchived() || region.getProvince().isArchived()) {
-                    throw new IllegalArgumentException("Impossible d'affecter un Regional a une region archivee.");
-                }
-
-                existingUser.setRegion(region);
-                existingUser.setProvince(region.getProvince());
-                break;
-
-            case BERGER:
-                if (userDTO.getFraternityId() == null) {
-                    throw new IllegalArgumentException("Un utilisateur BERGER doit etre rattache a une fraternite.");
-                }
-
-                Fraternity fraternity = fraternityRepository.findById(userDTO.getFraternityId())
-                        .orElseThrow(() -> new RuntimeException("Fraternity not found"));
-                if (fraternity.isArchived() || fraternity.getRegion().isArchived()) {
-                    throw new IllegalArgumentException("Impossible d'affecter un Berger a une fraternite archivee.");
-                }
-
-                existingUser.setFraternity(fraternity);
-                existingUser.setRegion(fraternity.getRegion());
-                existingUser.setProvince(fraternity.getRegion().getProvince());
-                break;
-
-            case ADMIN:
-                logger.info("Admin user updated without additional associations.");
-                break;
-
-            default:
-                throw new IllegalArgumentException("Invalid role specified");
-        }
-
-        logger.info("User updated successfully with ID: {}", id);
-        return userRepository.save(existingUser);
-    }
-
-
-
-
-
-
-
-    //
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
-
-
-
-
-
-
 }

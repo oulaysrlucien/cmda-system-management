@@ -6,6 +6,8 @@ public class CurrentUserScopeDTO {
 
     private Long userId;
     private String username;
+    private Long memberId;
+    private String displayName;
     private String role;
     private String scopeLevel;
     private ScopeRefDTO province;
@@ -29,6 +31,22 @@ public class CurrentUserScopeDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getRole() {

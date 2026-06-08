@@ -1,57 +1,90 @@
 package org.cmda.management.entities;
 
-import jakarta.persistence.*;
-import org.cmda.management.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.cmda.management.enums.Role;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")  // Optionnel: spécifie explicitement le nom de la table
+@Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Identifiant unique pour chaque utilisateur
+    private Long id;
 
     @NotNull
-    @Size(min = 5, max = 20)
+    @Size(min = 5, max = 120)
     @Column(nullable = false, unique = true)
-    private String username; // Nom d'utilisateur unique pour l'authentification
+    private String username;
 
     @NotNull
     @Size(min = 8)
     @Column(nullable = false)
-    private String password; // Mot de passe de l'utilisateur (généralement haché)
+    private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; // Rôle de l'utilisateur (Provincial, Régional, Berger, Admin)
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "province_id")
-    @JsonIgnoreProperties({"regions", "hibernateLazyInitializer"})  // Ignorer la sérialisation de ces propriétés pour éviter la récursivité
-    private Province province; // Province associée à l'utilisateur
+    @JsonIgnoreProperties({"regions", "hibernateLazyInitializer"})
+    private Province province;
 
     @ManyToOne
     @JoinColumn(name = "region_id")
-    @JsonIgnoreProperties({"province", "fraternities", "hibernateLazyInitializer"})  // Ignorer ces propriétés pour éviter la récursivité
-    private Region region; // Région associée à l'utilisateur
-
+    @JsonIgnoreProperties({"province", "fraternities", "hibernateLazyInitializer"})
+    private Region region;
 
     @ManyToOne
     @JoinColumn(name = "fraternity_id")
-    private Fraternity fraternity; // Fraternité associée à l'utilisateur
+    private Fraternity fraternity;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", unique = true)
+    private CmdaMember member;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    // Getters et setters pour accéder et modifier les propriétés de l'entité
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime lastLoginAt;
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -109,4 +142,35 @@ public class User {
         this.fraternity = fraternity;
     }
 
+    public CmdaMember getMember() {
+        return member;
+    }
+
+    public void setMember(CmdaMember member) {
+        this.member = member;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public LocalDateTime getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
+    }
 }

@@ -1,6 +1,7 @@
 package org.cmda.management.controllers;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.RegionDTO;
 import org.cmda.management.entities.Region;
 import org.cmda.management.services.RegionService;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/regions")
+@Tag(name = "06 - STRUCTURES - REGIONS", description = "CRUD et cycle de vie des regions.")
 public class RegionalController {
 
     @Autowired

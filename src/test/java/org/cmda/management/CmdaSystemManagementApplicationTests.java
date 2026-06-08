@@ -36,11 +36,18 @@ class CmdaSystemManagementApplicationTests {
 						+ "WHERE table_schema = DATABASE() AND table_name = 'member_journey_history'",
 				Integer.class
 		);
+		Integer baptismDateColumnCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM information_schema.columns "
+						+ "WHERE table_schema = DATABASE() AND table_name = 'cmda_members' "
+						+ "AND column_name = 'baptism_date'",
+				Integer.class
+		);
 
-		assertThat(migrationVersion).isGreaterThanOrEqualTo(2);
+		assertThat(migrationVersion).isGreaterThanOrEqualTo(3);
 		assertThat(journeyStagesCount).isEqualTo(10);
 		assertThat(lifeStatesCount).isEqualTo(3);
 		assertThat(journeyHistoryTableCount).isEqualTo(1);
+		assertThat(baptismDateColumnCount).isEqualTo(1);
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.cmda.management.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cmda.management.dtos.ProvinceDTO;
 import org.cmda.management.entities.Province;
 import org.cmda.management.services.ProvinceService;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/provinces")
+@Tag(name = "05 - STRUCTURES - PROVINCES", description = "CRUD et cycle de vie des provinces.")
 public class ProvincialController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProvincialController.class);

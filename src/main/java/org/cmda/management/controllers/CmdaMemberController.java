@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/members")
-@Tag(name = "Members", description = "Gestion Métier des Membres")
+@Tag(name = "99 - LEGACY - MEMBERS", description = "Ancienne API /members/** conservee temporairement pour compatibilite.")
 public class CmdaMemberController {
 
     @Autowired
@@ -89,6 +89,7 @@ public class CmdaMemberController {
      * MISE A JOUR
      * Archive le membre au lieu de le supprimer physiquement.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         cmdaMemberService.archiveCmdaMember(id);
@@ -216,6 +217,7 @@ public class CmdaMemberController {
      * CRUD METIER
      * Archive un membre sans suppression physique.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/archive")
     public ResponseEntity<Void> archiveMember(@PathVariable Long id) {
         cmdaMemberService.archiveCmdaMember(id);

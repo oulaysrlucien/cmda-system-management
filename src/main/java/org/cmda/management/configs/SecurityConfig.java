@@ -38,6 +38,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
 
+
+    // Injection des dépendances pour le filtre d'authentification JWT et le service de détails utilisateur personnalisé, qui sont utilisés pour gérer l'authentification et l'autorisation dans l'application
+    // Le JwtAuthenticationFilter est responsable de l'extraction et de la validation du token JWT dans les requêtes entrantes, tandis que le CustomUserDetailsService fournit les détails de l'utilisateur nécessaires pour l'authentification
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
             CustomUserDetailsService customUserDetailsService
@@ -46,6 +49,9 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
+
+    // Configuration de la chaîne de filtres de sécurité pour gérer l'authentification et l'autorisation des requêtes HTTP
+    // Cette configuration inclut la désactivation de CSRF, la gestion des sessions en mode stateless, l'ajout du filtre d'authentification JWT, et la définition des règles d'autorisation pour les différentes routes de l'API
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -88,6 +94,8 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    // Configuration de l'AuthenticationProvider pour utiliser le service de détails utilisateur personnalisé et le hachage des mots de passe avec BCrypt, ce qui permet à Spring Security de gérer l'authentification des utilisateurs en vérifiant les informations d'identification fournies lors de la connexion
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -101,11 +109,17 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+
+    // Utilisation de BCrypt pour le hachage des mots de passe, ce qui est une pratique recommandée pour la sécurité
+    // BCrypt est un algorithme de hachage adaptatif qui rend les attaques par force brute plus difficiles en augmentant le temps de calcul nécessaire pour chaque tentative de mot de passe
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+
+    // Gestionnaire d'entrée d'authentification personnalisé pour les requêtes non authentifiées
+    // Ce gestionnaire renvoie une réponse JSON avec un message d'erreur clair au lieu de rediriger vers une page de connexion
     @Bean
     public AuthenticationEntryPoint customAuthenticationEntryPoint() {
         return (request, response, authException) -> {
@@ -116,6 +130,10 @@ public class SecurityConfig {
         };
     }
 
+
+
+    // Gestionnaire d'accès refusé personnalisé pour les utilisateurs authentifiés mais sans les autorisations nécessaires
+    // Ce gestionnaire renvoie une réponse JSON avec un message d'erreur clair au lieu de rediriger vers une page d'erreur
     @Bean
     public AccessDeniedHandler customAccessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
@@ -126,6 +144,10 @@ public class SecurityConfig {
         };
     }
 
+
+
+    // Configuration CORS pour permettre les requêtes depuis le frontend Angular
+    // Cette configuration permet les requêtes depuis http://localhost:4200, ce qui est l'URL par défaut pour les applications Angular en développement
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
